@@ -7,7 +7,7 @@ const Header = () => {
     <header className="bg-white shadow-md">
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
         <Link href="/" className="text-2xl font-bold text-gray-800">
-          MeraBlog
+          JoyBlog
         </Link>
         <nav>
           <Link href="/" className="px-4 text-gray-600 hover:text-blue-500">
@@ -18,6 +18,9 @@ const Header = () => {
           </Link>
           <Link href="/contact" className="px-4 text-gray-600 hover:text-blue-500">
             Contact
+          </Link>
+          <Link href="/contact" className="px-4 text-gray-600 hover:text-blue-500">
+            Signup/Login
           </Link>
         </nav>
       </div>
