@@ -4,6 +4,7 @@
 import { useState } from 'react';
 // Step A: Axios ko import karo
 import axios from 'axios';
+import Link from 'next/link';
 
 export default function SignupPage() {
   // State variables waise hi rahenge
@@ -103,12 +104,22 @@ export default function SignupPage() {
           >
             Sign Up
           </button>
+
+          
         </form>
 
         {/* Success and Error Messages */}
         {message && <p className="mt-4 text-center text-green-600">{message}</p>}
         {error && <p className="mt-4 text-center text-red-600">{error}</p>}
+      <p className="text-center text-sm text-gray-600 pt-4">
+          Already have an account?{' '}
+          <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+            Login here
+          </Link>
+        </p>
       </div>
+
+  
     </main>
   );
 }
