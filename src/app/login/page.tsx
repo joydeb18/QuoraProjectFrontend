@@ -7,8 +7,15 @@ import Link from 'next/link';
 
 const LoginPage = () => {
   const router = useRouter();
+  
+  // 1. Form ka data yaad rakhne ke liye states
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [masterKey, setMasterKey] = useState('');
+  
+  // 2. Nayi state, yeh yaad rakhegi ki user admin ki tarah login kar raha hai ya nahi
+  const [isAdminLogin, setIsAdminLogin] = useState(false);
+
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -17,24 +24,29 @@ const LoginPage = () => {
     setIsLoading(true);
     setError('');
 
-    try {
-      const response = await axios.post('http://localhost:5000/login', {
-        email,
-        password,
-      });
+    // 3. Backend ko bhejne wala data taiyaar kar rahe hain
+    const payload = {
+      email,
+      // Agar admin login hai, toh masterKey bhejo, warna password bhejo
+      password: isAdminLogin ? undefined : password,
+      masterKey: isAdminLogin ? masterKey : undefined,
+    };
 
-      const { token } = response.data;
-      console.log('Backend se token mila hai:', token);
-      
+    try {
+      const response = await axios.post('http://localhost:5000/login', payload);
+
+      const { token, user } = response.data;
       localStorage.setItem('blog_token', token);
-      router.push('/dashboard');
+
+      // Role ke hisaab se redirection
+      if (user.role === 'admin') {
+        router.push('/admin/dashboard');
+      } else {
+        router.push('/dashboard');
+      }
 
     } catch (err: any) {
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
-      } else {
-        setError('Login failed. Network error or server might be down.');
-      }
+      setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -46,33 +58,62 @@ const LoginPage = () => {
         <h1 className="text-2xl font-bold text-center text-gray-800">Login to Your Account</h1>
         
         <form onSubmit={handleLogin} className="space-y-6">
-          {/* Email Input */}
+          {/* Email Input (yeh hamesha dikhega) */}
           <div>
             <label htmlFor="email">Email</label>
             <input
               type="email"
               id="email"
               value={email}
-              // --- YAHAN GALTI THEEK KAR DI HAI ---
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-3 py-2 mt-1 border rounded-md"
             />
           </div>
-          {/* Password Input */}
-          <div>
-            <label htmlFor="password">Password</label>
+
+          {/* 4. Yahan humne condition lagayi hai */}
+          {isAdminLogin ? (
+            // Agar 'isAdminLogin' true hai, toh Master Key ka box dikhao
+            <div>
+              <label htmlFor="masterKey">Master Key</label>
+              <input
+                type="password"
+                id="masterKey"
+                value={masterKey}
+                onChange={(e) => setMasterKey(e.target.value)}
+                required // Admin ke liye yeh zaroori hai
+                className="w-full px-3 py-2 mt-1 border rounded-md"
+              />
+            </div>
+          ) : (
+            // Agar 'isAdminLogin' false hai, toh normal Password ka box dikhao
+            <div>
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required // Normal user ke liye yeh zaroori hai
+                className="w-full px-3 py-2 mt-1 border rounded-md"
+              />
+            </div>
+          )}
+
+          {/* 5. Yeh hai humara naya checkbox */}
+          <div className="flex items-center">
             <input
-              type="password"
-              id="password"
-              value={password}
-              // --- Yahan bhi check karke theek kar diya hai ---
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-3 py-2 mt-1 border rounded-md"
+              type="checkbox"
+              id="admin-login"
+              checked={isAdminLogin}
+              onChange={(e) => setIsAdminLogin(e.target.checked)}
+              className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
             />
+            <label htmlFor="admin-login" className="ml-2 block text-sm text-gray-900">
+              Login as Admin
+            </label>
           </div>
-          {/* Submit Button */}
+
           <button
             type="submit"
             className="w-full py-2 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:bg-indigo-400"
