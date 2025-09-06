@@ -8,14 +8,15 @@ import Link from 'next/link';
 const LoginPage = () => {
   const router = useRouter();
   
-  // 1. Form ka data yaad rakhne ke liye states
+  // States to store user input
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [masterKey, setMasterKey] = useState('');
   
-  // 2. Nayi state, yeh yaad rakhegi ki user admin ki tarah login kar raha hai ya nahi
+  // State to check if it's an admin login
   const [isAdminLogin, setIsAdminLogin] = useState(false);
 
+  // States for messages and loading
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -24,10 +25,9 @@ const LoginPage = () => {
     setIsLoading(true);
     setError('');
 
-    // 3. Backend ko bhejne wala data taiyaar kar rahe hain
+    // Backend ko bhejne wala data taiyaar kar rahe hain
     const payload = {
       email,
-      // Agar admin login hai, toh masterKey bhejo, warna password bhejo
       password: isAdminLogin ? undefined : password,
       masterKey: isAdminLogin ? masterKey : undefined,
     };
@@ -35,13 +35,19 @@ const LoginPage = () => {
     try {
       const response = await axios.post('http://localhost:5000/login', payload);
 
+      // Backend se token aur user ka object (jisme role hai) receive karna
       const { token, user } = response.data;
+      
+      // Token ko browser ki memory (localStorage) mein save karna
       localStorage.setItem('blog_token', token);
 
-      // Role ke hisaab se redirection
-      if (user.role === 'admin') {
+      // === YEH HAI ASLI REDIRECTION KA LOGIC ===
+      // Faisla lene ka samay!
+      if (user && user.role === 'admin') {
+        // Agar user ka role 'admin' hai, toh usse admin dashboard par bhejo.
         router.push('/admin/dashboard');
       } else {
+        // Warna usse normal user ke dashboard par bhejo.
         router.push('/dashboard');
       }
 
@@ -58,7 +64,7 @@ const LoginPage = () => {
         <h1 className="text-2xl font-bold text-center text-gray-800">Login to Your Account</h1>
         
         <form onSubmit={handleLogin} className="space-y-6">
-          {/* Email Input (yeh hamesha dikhega) */}
+          {/* Email Input (Always visible) */}
           <div>
             <label htmlFor="email">Email</label>
             <input
@@ -71,9 +77,8 @@ const LoginPage = () => {
             />
           </div>
 
-          {/* 4. Yahan humne condition lagayi hai */}
+          {/* Conditional Input Field (Password or Master Key) */}
           {isAdminLogin ? (
-            // Agar 'isAdminLogin' true hai, toh Master Key ka box dikhao
             <div>
               <label htmlFor="masterKey">Master Key</label>
               <input
@@ -81,12 +86,11 @@ const LoginPage = () => {
                 id="masterKey"
                 value={masterKey}
                 onChange={(e) => setMasterKey(e.target.value)}
-                required // Admin ke liye yeh zaroori hai
+                required
                 className="w-full px-3 py-2 mt-1 border rounded-md"
               />
             </div>
           ) : (
-            // Agar 'isAdminLogin' false hai, toh normal Password ka box dikhao
             <div>
               <label htmlFor="password">Password</label>
               <input
@@ -94,13 +98,13 @@ const LoginPage = () => {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required // Normal user ke liye yeh zaroori hai
+                required
                 className="w-full px-3 py-2 mt-1 border rounded-md"
               />
             </div>
           )}
 
-          {/* 5. Yeh hai humara naya checkbox */}
+          {/* Admin Login Checkbox */}
           <div className="flex items-center">
             <input
               type="checkbox"
@@ -114,6 +118,7 @@ const LoginPage = () => {
             </label>
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             className="w-full py-2 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:bg-indigo-400"
@@ -137,4 +142,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-
