@@ -1,5 +1,9 @@
+import ProtectedRoute from "@/app/components/ProtectedRoute"; // Bouncer ko import kiya
+
+
 const DashboardPage = () => {
   return (
+       <ProtectedRoute>
     <div className="bg-white p-8 rounded-lg shadow-md text-center">
       <h1 className="text-5xl font-extrabold text-blue-600 mb-4">
         Welcome Back!
@@ -18,6 +22,7 @@ const DashboardPage = () => {
         </p>
       </div>
     </div>
+    </ProtectedRoute>
   );
 };
 

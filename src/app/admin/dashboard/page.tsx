@@ -1,6 +1,11 @@
+import ProtectedRoute from "@/app/components/ProtectedRoute"; // Bouncer ko import kiya
+
+
+
 const AdminDashboardPage = () => {
     return (
-      <div className="bg-white p-8 rounded-lg shadow-md text-center">
+        <ProtectedRoute>
+<div className="bg-white p-8 rounded-lg shadow-md text-center">
         <h1 className="text-5xl font-extrabold text-red-600 mb-4">
           Admin Control Panel
         </h1>
@@ -11,6 +16,7 @@ const AdminDashboardPage = () => {
             <p className="text-gray-600">Yahan par user management, post approval jaise features aayenge.</p>
         </div>
       </div>
+        </ProtectedRoute>
     );
   };
   
