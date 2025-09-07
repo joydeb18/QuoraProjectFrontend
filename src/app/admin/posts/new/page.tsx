@@ -3,45 +3,61 @@
 import RoleProtectedRoute from "@/app/components/RoleProtectedRoute";
 import Link from "next/link";
 import { useState } from "react";
+import axios from "axios"; // axios ko import kiya
+import { useRouter } from "next/navigation"; // router ko import kiya
 
 const CreatePostPage = () => {
+    const router = useRouter();
     // Form ke data ke liye states
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [image, setImage] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null); // Image preview ke liye
+    // const [image, setImage] = useState<File | null>(null); // Image wala kaam hum baad mein karenge
 
-    // Image select karne par yeh function chalega
-    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            setImage(file);
-            // Image ka preview banane ke liye
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+    // Nayi states messages aur loading ke liye
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    // Form submit karne par yeh function chalega (abhi ke liye placeholder)
-    const handleSubmit = (event: React.FormEvent) => {
+    // Form submit karne par yeh function chalega
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        // Basic validation
         if (!title || !description) {
-            alert("Title aur Description, dono zaroori hain.");
+            setError("Title aur Description, dono zaroori hain.");
             return;
         }
         
-        // Yahan hum future mein backend ko data bhejenge
-        console.log({
-            title,
-            description,
-            image,
-        });
+        setIsLoading(true);
+        setMessage('');
+        setError('');
 
-        alert("Post successfully ban gaya! (Abhi backend se connect nahi hai)");
+        try {
+            const token = localStorage.getItem('blog_token');
+            if (!token) {
+                throw new Error("Aap logged-in nahi hain. Please login again.");
+            }
+
+            const payload = {
+                title,
+                content: description, // Backend mein humne isse 'content' naam diya hai
+            };
+            
+            const headers = { 'x-auth-token': token };
+
+            // Backend ke naye API route ko call karna
+            await axios.post('http://localhost:5000/api/posts', payload, { headers });
+            
+            setMessage("Post successfully ban gaya! Aapko posts waale page par redirect kiya jaa raha hai...");
+
+            // Success hone par 2 second baad 'All Posts' page par bhej do
+            setTimeout(() => {
+                router.push('/admin/posts');
+            }, 2000);
+
+        } catch (err: any) {
+            setError(err.response?.data?.message || "Post banane mein problem aayi.");
+            setIsLoading(false);
+        }
+        // Success hone par loading state false nahi karenge, kyunki page redirect ho jayega
     };
 
     return (
@@ -86,45 +102,19 @@ const CreatePostPage = () => {
                 required
               />
             </div>
-
-            {/* Image Upload Input */}
-            <div>
-              <label htmlFor="image" className="block text-lg font-medium text-gray-700">
-                Featured Image (Optional)
-              </label>
-              <div className="mt-1 flex items-center justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                <div className="space-y-1 text-center">
-                  <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  <div className="flex text-sm text-gray-600">
-                    <label htmlFor="image-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                      <span>Upload a file</span>
-                      <input id="image-upload" name="image" type="file" className="sr-only" onChange={handleImageChange} accept="image/png, image/jpeg, image/gif" />
-                    </label>
-                    <p className="pl-1">or drag and drop</p>
-                  </div>
-                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Image Preview */}
-            {imagePreview && (
-                <div>
-                    <h3 className="text-lg font-medium text-gray-700">Image Preview:</h3>
-                    <div className="mt-2 border rounded-md p-2">
-                        <img src={imagePreview} alt="Selected preview" className="max-h-60 rounded-md mx-auto"/>
-                    </div>
-                </div>
-            )}
-
+            
+            {/* Messages */}
+            {message && <p className="text-center text-green-600">{message}</p>}
+            {error && <p className="text-center text-red-600">{error}</p>}
 
             {/* Submit Button */}
             <div className="text-right">
               <button
                 type="submit"
-                className="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-lg font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-lg font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400"
+                disabled={isLoading}
               >
-                Publish Post
+                {isLoading ? 'Publishing...' : 'Publish Post'}
               </button>
             </div>
           </form>
