@@ -1,64 +1,121 @@
-// Step 1: Component ko 'use client' banana zaroori hai
-'use client'; 
+'use client';
 
 import RoleProtectedRoute from "@/app/components/RoleProtectedRoute";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react"; // Step 2: useState aur useEffect ko import kiya
+import { useEffect, useState } from "react";
+import axios from "axios"; // axios ko import kiya
+
+// User ke data type ke liye ek interface banaya
+interface User {
+  _id: string;
+  username: string;
+  email: string;
+  role: string;
+}
 
 const AdminDashboardPage = () => {
     const router = useRouter();
-    // Step 3: Ek state banayi user ka naam yaad rakhne ke liye
     const [username, setUsername] = useState('');
+    
+    // Nayi states user list, loading, aur error ke liye
+    const [users, setUsers] = useState<User[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState('');
 
-    // Step 4: Yeh function page load hote hi sirf ek baar chalega
     useEffect(() => {
-        // Browser ki memory (localStorage) se user ka object nikalo
+        // Page load hote hi user ka naam set karna
         const userDataString = localStorage.getItem('blog_user');
-        
-        // Agar user data mila
         if (userDataString) {
-            // String ko wapas JavaScript object mein badlo
             const user = JSON.parse(userDataString);
-            // Object se naam nikaal kar 'username' state mein daal do
             setUsername(user.name);
         }
-    }, []); // Khaali dependency array ka matlab hai ki yeh sirf ek baar chalega
 
-    // Step 5: Logout function ko update kiya
+        // Saare users ki list fetch karne ke liye function
+        const fetchUsers = async () => {
+            try {
+                // Browser ki memory se token nikalo
+                const token = localStorage.getItem('blog_token');
+                if (!token) {
+                    setError("Token nahi mila. Please login again.");
+                    setIsLoading(false);
+                    return;
+                }
+
+                // Backend ke naye API route ko call karo
+                const response = await axios.get('http://localhost:5000/api/users', {
+                    headers: {
+                        // Request ke saath token (ticket) bhejna zaroori hai
+                        'x-auth-token': token
+                    }
+                });
+                
+                // Response se users ki list nikaal kar state mein daal do
+                setUsers(response.data.users);
+
+            } catch (err: any) {
+                setError(err.response?.data?.message || "Users ko fetch karne mein problem aayi.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchUsers(); // Function ko call kiya
+    }, []);
+
     const handleLogout = () => {
-        // Token ke saath-saath user ka data bhi memory se hata do
         localStorage.removeItem('blog_token');
         localStorage.removeItem('blog_user');
-        // User ko wapas login page par bhej do
         router.push('/login');
     };
 
     return (
       <RoleProtectedRoute requiredRole="admin">
-        <div className="bg-white p-8 rounded-lg shadow-md text-center">
-          <h1 className="text-5xl font-extrabold text-red-600 mb-4">
-            Admin Control Panel
-          </h1>
-
-          {/* === YEH HAI NAYA BADLAV === */}
-          {/* Ab hum 'username' state se user ka naam dikha rahe hain */}
-          <p className="text-xl text-gray-700">
-            Welcome, {username || 'Master Joy'}! Yahan se aap poori website ko control kar sakte hain.
-          </p>
-          
-          <div className="mt-8 border-t pt-6">
-              <p className="text-gray-600">Yahan par user management, post approval jaise features aayenge.</p>
-          </div>
-
-          <div className="mt-8">
+        <div className="bg-white p-8 rounded-lg shadow-md">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h1 className="text-3xl font-extrabold text-red-600">Admin Control Panel</h1>
+              <p className="text-lg text-gray-700">Welcome, {username || 'Master'}!</p>
+            </div>
             <button
               onClick={handleLogout}
-              className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600 transition duration-300"
+              className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition"
             >
               Logout
             </button>
           </div>
-
+          
+          <div className="mt-8 border-t pt-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">All Registered Users</h2>
+            
+            {/* Loading, Error, aur Table ka logic */}
+            {isLoading ? (
+              <p>Loading user list...</p>
+            ) : error ? (
+              <p className="text-red-500">{error}</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-white border">
+                  <thead className="bg-gray-200">
+                    <tr>
+                      <th className="py-2 px-4 border">Username</th>
+                      <th className="py-2 px-4 border">Email</th>
+                      <th className="py-2 px-4 border">Role</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* users array par loop karke har user ke liye ek table row banana */}
+                    {users.map((user) => (
+                      <tr key={user._id} className="text-center">
+                        <td className="py-2 px-4 border">{user.username}</td>
+                        <td className="py-2 px-4 border">{user.email}</td>
+                        <td className="py-2 px-4 border">{user.role}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </RoleProtectedRoute>
     );
