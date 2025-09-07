@@ -5,13 +5,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-// Post ke data type ke liye ek simple interface
 interface Post {
   _id: string;
   title: string;
-  author: {
-    username: string;
-  };
+  author: { username: string };
   createdAt: string;
 }
 
@@ -25,12 +22,14 @@ const AllPostsPage = () => {
             try {
                 const token = localStorage.getItem('blog_token');
                 if (!token) throw new Error("Aap logged-in nahi hain.");
-                
+
                 const headers = { 'x-auth-token': token };
                 const response = await axios.get('http://localhost:5000/api/posts', { headers });
                 
                 setPosts(response.data.posts);
             } catch (err: any) {
+                // JAASOOS: Browser ke console mein poora error dikhao
+                console.error("Posts fetch karne mein error:", err);
                 setError(err.response?.data?.message || "Posts ko fetch karne mein problem aayi.");
             } finally {
                 setIsLoading(false);
@@ -62,34 +61,14 @@ const AllPostsPage = () => {
             (
               <div className="overflow-x-auto">
                 <table className="min-w-full bg-white border">
-                  <thead className="bg-gray-200">
-                    <tr>
-                      <th className="py-2 px-4 border text-left">Title</th>
-                      <th className="py-2 px-4 border">Author</th>
-                      <th className="py-2 px-4 border">Date</th>
-                      <th className="py-2 px-4 border">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+                   <thead className="bg-gray-200"><tr><th className="py-2 px-4 border text-left">Title</th><th className="py-2 px-4 border">Author</th><th className="py-2 px-4 border">Date</th><th className="py-2 px-4 border">Actions</th></tr></thead>
+                   <tbody>
                     {posts.length > 0 ? posts.map((post) => (
                       <tr key={post._id} className="text-center hover:bg-gray-50">
-                        <td className="py-2 px-4 border text-left font-medium">{post.title}</td>
-                        <td className="py-2 px-4 border">{post.author?.username || 'N/A'}</td>
-                        <td className="py-2 px-4 border">{new Date(post.createdAt).toLocaleDateString()}</td>
-                        <td className="py-2 px-4 border">
-                           {/* === YAHAN SE EDIT BUTTON HATA DIYA GAYA HAI === */}
-                           <Link href={`/admin/posts/view/${post._id}`} className="text-green-600 hover:underline font-semibold">
-                             View Post
-                           </Link>
-                        </td>
+                        <td className="py-2 px-4 border text-left font-medium">{post.title}</td><td className="py-2 px-4 border">{post.author?.username || 'N/A'}</td><td className="py-2 px-4 border">{new Date(post.createdAt).toLocaleDateString()}</td>
+                        <td className="py-2 px-4 border"><Link href={`/admin/posts/view/${post._id}`} className="text-green-600 hover:underline font-semibold">View Post</Link></td>
                       </tr>
-                    )) : (
-                      <tr>
-                        <td colSpan={4} className="text-center py-8 text-gray-500">
-                          Abhi tak koi post nahi banaya gaya hai.
-                        </td>
-                      </tr>
-                    )}
+                    )) : ( <tr><td colSpan={4} className="text-center py-8 text-gray-500">Abhi tak koi post nahi banaya gaya hai.</td></tr>)}
                   </tbody>
                 </table>
               </div>
