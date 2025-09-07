@@ -4,9 +4,9 @@ import RoleProtectedRoute from "@/app/components/RoleProtectedRoute";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams, useRouter } from "next/navigation"; // useRouter ko import kiya
+import { useParams, useRouter } from "next/navigation";
 
-// Post ke data type ke liye ek interface
+// Post ke data type mein 'imageUrl' add kiya
 interface Post {
   _id: string;
   title: string;
@@ -15,16 +15,19 @@ interface Post {
     username: string;
   };
   createdAt: string;
+  imageUrl?: string; // Image optional hai
 }
 
 const ViewPostPage = () => {
     const params = useParams();
-    const router = useRouter(); // router ko initialize kiya
+    const router = useRouter();
     const postId = params.id;
-
     const [post, setPost] = useState<Post | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+
+    // Backend server ka address yahan define kiya
+    const backendUrl = "http://localhost:5000";
 
     useEffect(() => {
         if (!postId) return;
@@ -35,7 +38,7 @@ const ViewPostPage = () => {
                 if (!token) throw new Error("Aap logged-in nahi hain.");
                 
                 const headers = { 'x-auth-token': token };
-                const response = await axios.get(`http://localhost:5000/api/posts/${postId}`, { headers });
+                const response = await axios.get(`${backendUrl}/api/posts/${postId}`, { headers });
                 
                 setPost(response.data.post);
             } catch (err: any) {
@@ -48,28 +51,20 @@ const ViewPostPage = () => {
         fetchPost();
     }, [postId]);
 
-    // === YEH NAYA DELETE FUNCTION HAI ===
     const handleDelete = async () => {
-        // User se confirmation lena
         if (window.confirm('Are you sure you want to permanently delete this post?')) {
             try {
                 const token = localStorage.getItem('blog_token');
                 if (!token) throw new Error("Aap logged-in nahi hain.");
-
                 const headers = { 'x-auth-token': token };
-                // Backend ke naye delete API route ko call karna
-                await axios.delete(`http://localhost:5000/api/posts/${postId}`, { headers });
-
+                await axios.delete(`${backendUrl}/api/posts/${postId}`, { headers });
                 alert('Post successfully delete ho gaya!');
-                // Success hone par 'All Posts' page par wapas bhej do
                 router.push('/admin/posts');
-
             } catch (err: any) {
                 alert(err.response?.data?.message || "Post ko delete karne mein problem aayi.");
             }
         }
     };
-
 
     if (isLoading) {
         return <div className="text-center py-10">Loading post...</div>;
@@ -80,12 +75,11 @@ const ViewPostPage = () => {
 
     return (
       <RoleProtectedRoute requiredRole="admin">
-        <div className="p-4 md:p-8">
+        <div className="p-4 md:p-8 max-w-4xl mx-auto">
             <div className="flex justify-between items-center mb-6">
                 <Link href="/admin/posts" className="text-indigo-600 hover:underline">
                   &larr; Back to All Posts
                 </Link>
-                {/* === YEH NAYA DELETE BUTTON HAI === */}
                 <button
                     onClick={handleDelete}
                     className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition"
@@ -97,14 +91,28 @@ const ViewPostPage = () => {
           {/* Stylish Post Card */}
           {post && (
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                {/* === YEH HAI NAYA IMAGE DIKHANE KA LOGIC === */}
+                {post.imageUrl && (
+                    <div className="bg-gray-100 p-4">
+                        <img 
+                            // Hum yahan poora URL bana rahe hain
+                            src={`${backendUrl}/${post.imageUrl}`} 
+                            alt={post.title} 
+                            // Nayi styling: poori image dikhegi, max height 500px hogi
+                            className="w-full max-h-[300px] object-contain mx-auto rounded-md" 
+                        />
+                    </div>
+                )}
+
                 <div className="p-6 md:p-8">
-                    <h1 className="text-4xl font-extrabold text-gray-900 mb-4">{post.title}</h1>
+                    <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">{post.title}</h1>
                     <div className="flex items-center text-gray-500 text-sm mb-6">
                         <span>By {post.author?.username || 'Unknown'}</span>
                         <span className="mx-2">&bull;</span>
                         <span>{new Date(post.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                     </div>
-                    <div className="prose lg:prose-xl max-w-full">
+                    {/* Post ka content (Tailwind Typography use kar sakte hain for better styling) */}
+                    <div className="prose lg:prose-xl max-w-full text-gray-800">
                        <p>{post.content}</p>
                     </div>
                 </div>
