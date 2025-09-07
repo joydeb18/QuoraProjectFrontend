@@ -12,7 +12,6 @@ interface Post {
   author: {
     username: string;
   };
-  status: string;
   createdAt: string;
 }
 
@@ -26,7 +25,7 @@ const AllPostsPage = () => {
             try {
                 const token = localStorage.getItem('blog_token');
                 if (!token) throw new Error("Aap logged-in nahi hain.");
-
+                
                 const headers = { 'x-auth-token': token };
                 const response = await axios.get('http://localhost:5000/api/posts', { headers });
                 
@@ -47,8 +46,6 @@ const AllPostsPage = () => {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-extrabold text-gray-800">Post Management</h1>
             <div className="flex items-center space-x-4">
-                {/* === YEH BUTTON AB EK LINK BAN GAYA HAI === */}
-                {/* Yeh link naye page '/admin/posts/new' par le jayega */}
                 <Link href="/admin/posts/new" className="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition">
                     Create New Post
                 </Link>
@@ -65,16 +62,34 @@ const AllPostsPage = () => {
             (
               <div className="overflow-x-auto">
                 <table className="min-w-full bg-white border">
-                  {/* ... table ka code jaisa tha waisa hi hai ... */}
-                   <thead className="bg-gray-200"><tr><th className="py-2 px-4 border text-left">Title</th><th className="py-2 px-4 border">Author</th><th className="py-2 px-4 border">Date</th><th className="py-2 px-4 border">Status</th><th className="py-2 px-4 border">Actions</th></tr></thead>
-                   <tbody>
+                  <thead className="bg-gray-200">
+                    <tr>
+                      <th className="py-2 px-4 border text-left">Title</th>
+                      <th className="py-2 px-4 border">Author</th>
+                      <th className="py-2 px-4 border">Date</th>
+                      <th className="py-2 px-4 border">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
                     {posts.length > 0 ? posts.map((post) => (
                       <tr key={post._id} className="text-center hover:bg-gray-50">
-                        <td className="py-2 px-4 border text-left font-medium">{post.title}</td><td className="py-2 px-4 border">{post.author?.username || 'N/A'}</td><td className="py-2 px-4 border">{new Date(post.createdAt).toLocaleDateString()}</td>
-                        <td className="py-2 px-4 border"><span className={`px-2 py-1 rounded-full text-xs font-semibold ${post.status === 'published' ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-800'}`}>{post.status}</span></td>
-                        <td className="py-2 px-4 border"><button className="text-blue-500 hover:underline">Edit</button></td>
+                        <td className="py-2 px-4 border text-left font-medium">{post.title}</td>
+                        <td className="py-2 px-4 border">{post.author?.username || 'N/A'}</td>
+                        <td className="py-2 px-4 border">{new Date(post.createdAt).toLocaleDateString()}</td>
+                        <td className="py-2 px-4 border">
+                           {/* === YAHAN SE EDIT BUTTON HATA DIYA GAYA HAI === */}
+                           <Link href={`/admin/posts/view/${post._id}`} className="text-green-600 hover:underline font-semibold">
+                             View Post
+                           </Link>
+                        </td>
                       </tr>
-                    )) : ( <tr><td colSpan={5} className="text-center py-8 text-gray-500">Abhi tak koi post nahi banaya gaya hai. Upar diye gaye 'Create New Post' button se shuruaat karein.</td></tr>)}
+                    )) : (
+                      <tr>
+                        <td colSpan={4} className="text-center py-8 text-gray-500">
+                          Abhi tak koi post nahi banaya gaya hai.
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
