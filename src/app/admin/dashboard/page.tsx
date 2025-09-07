@@ -74,18 +74,6 @@ const AdminDashboardPage = () => {
                     window.location.reload(); 
                 } catch (err) { alert('Failed to delete user.'); }
             }
-        } else if (action === 'toggle-status') {
-            const newStatus = userToActOn?.status === 'active' ? 'disabled' : 'active';
-            try {
-                await axios.put(`http://localhost:5000/api/users/${userId}/status`, { status: newStatus }, { headers });
-                window.location.reload();
-            } catch (err) { alert('Failed to update status.'); }
-        } else if (action === 'toggle-role') {
-            const newRole = userToActOn?.role === 'user' ? 'admin' : 'user';
-             try {
-                await axios.put(`http://localhost:5000/api/users/${userId}/role`, { role: newRole }, { headers });
-                window.location.reload();
-            } catch (err) { alert('Failed to update role.'); }
         }
     };
 
@@ -117,7 +105,7 @@ const AdminDashboardPage = () => {
                         <tr key={user._id} className="text-center hover:bg-gray-50">
                             <td className="py-2 px-4 border">{user.username}</td><td className="py-2 px-4 border">{user.email}</td><td className="py-2 px-4 border">{user.role}</td>
                             <td className="py-2 px-4 border"><span className={`px-2 py-1 rounded-full text-xs font-semibold ${user.status === 'active' ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'}`}>{user.status}</span></td>
-                            <td className="py-2 px-4 border"><select onChange={(e) => {handleAction(user._id, e.target.value); e.target.value = ""}} className="border rounded p-1"><option value="">Select Action</option><option value="delete">Delete</option><option value="toggle-status">Toggle Status</option><option value="toggle-role">Toggle Role</option></select></td>
+                            <td className="py-2 px-4 border"><select onChange={(e) => {handleAction(user._id, e.target.value); e.target.value = ""}} className="border rounded p-1"><option value="">Select Action</option><option value="delete">Delete</option></select></td>
                         </tr>
                         ))}
                     </tbody>
