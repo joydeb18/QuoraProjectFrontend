@@ -4,7 +4,7 @@ import RoleProtectedRoute from "@/app/components/RoleProtectedRoute";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "next/navigation"; // isse hum URL se ID nikaalenge
+import { useParams, useRouter } from "next/navigation"; // useRouter ko import kiya
 
 // Post ke data type ke liye ek interface
 interface Post {
@@ -18,15 +18,16 @@ interface Post {
 }
 
 const ViewPostPage = () => {
-    const params = useParams(); // URL se parameters nikaalne ke liye
-    const postId = params.id; // Post ki ID nikaali
+    const params = useParams();
+    const router = useRouter(); // router ko initialize kiya
+    const postId = params.id;
 
     const [post, setPost] = useState<Post | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
 
     useEffect(() => {
-        if (!postId) return; // Agar ID na mile toh kuch mat karo
+        if (!postId) return;
 
         const fetchPost = async () => {
             try {
@@ -34,7 +35,6 @@ const ViewPostPage = () => {
                 if (!token) throw new Error("Aap logged-in nahi hain.");
                 
                 const headers = { 'x-auth-token': token };
-                // Naye API route ko call kar rahe hain
                 const response = await axios.get(`http://localhost:5000/api/posts/${postId}`, { headers });
                 
                 setPost(response.data.post);
@@ -48,6 +48,29 @@ const ViewPostPage = () => {
         fetchPost();
     }, [postId]);
 
+    // === YEH NAYA DELETE FUNCTION HAI ===
+    const handleDelete = async () => {
+        // User se confirmation lena
+        if (window.confirm('Are you sure you want to permanently delete this post?')) {
+            try {
+                const token = localStorage.getItem('blog_token');
+                if (!token) throw new Error("Aap logged-in nahi hain.");
+
+                const headers = { 'x-auth-token': token };
+                // Backend ke naye delete API route ko call karna
+                await axios.delete(`http://localhost:5000/api/posts/${postId}`, { headers });
+
+                alert('Post successfully delete ho gaya!');
+                // Success hone par 'All Posts' page par wapas bhej do
+                router.push('/admin/posts');
+
+            } catch (err: any) {
+                alert(err.response?.data?.message || "Post ko delete karne mein problem aayi.");
+            }
+        }
+    };
+
+
     if (isLoading) {
         return <div className="text-center py-10">Loading post...</div>;
     }
@@ -58,16 +81,22 @@ const ViewPostPage = () => {
     return (
       <RoleProtectedRoute requiredRole="admin">
         <div className="p-4 md:p-8">
-            <Link href="/admin/posts" className="text-indigo-600 hover:underline mb-6 inline-block">
-              &larr; Back to All Posts
-            </Link>
+            <div className="flex justify-between items-center mb-6">
+                <Link href="/admin/posts" className="text-indigo-600 hover:underline">
+                  &larr; Back to All Posts
+                </Link>
+                {/* === YEH NAYA DELETE BUTTON HAI === */}
+                <button
+                    onClick={handleDelete}
+                    className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition"
+                >
+                    Delete Post
+                </button>
+            </div>
           
-          {/* === YEH HAI STYLISH POST CARD === */}
+          {/* Stylish Post Card */}
           {post && (
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                {/* Yahan hum future mein image laga sakte hain */}
-                {/* <img src="..." alt={post.title} className="w-full h-64 object-cover" /> */}
-
                 <div className="p-6 md:p-8">
                     <h1 className="text-4xl font-extrabold text-gray-900 mb-4">{post.title}</h1>
                     <div className="flex items-center text-gray-500 text-sm mb-6">
@@ -75,7 +104,6 @@ const ViewPostPage = () => {
                         <span className="mx-2">&bull;</span>
                         <span>{new Date(post.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                     </div>
-                    {/* Post ka content */}
                     <div className="prose lg:prose-xl max-w-full">
                        <p>{post.content}</p>
                     </div>
