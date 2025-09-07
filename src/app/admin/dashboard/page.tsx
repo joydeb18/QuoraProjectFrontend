@@ -97,12 +97,7 @@ const AdminDashboardPage = () => {
         } 
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('blog_token');
-        localStorage.removeItem('blog_user');
-        router.push('/login');
-    };
-
+   
     return (
       <RoleProtectedRoute requiredRole="admin">
         <div className="p-4 md:p-8">
@@ -111,12 +106,7 @@ const AdminDashboardPage = () => {
               <h1 className="text-3xl font-extrabold text-red-600">Admin Control Panel</h1>
               <p className="text-lg text-gray-700">Welcome, {username || 'Master'}!</p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition"
-            >
-              Logout
-            </button>
+           
           </div>
           
           {/* Active Users Table */}
@@ -151,7 +141,7 @@ const AdminDashboardPage = () => {
                           <select onChange={(e) => {handleAction(user._id, e.target.value); e.target.value = ""}} className="border rounded p-1">
                             <option value="">Select Action</option>
                             <option value="delete">Delete</option>
-                            <option value="toggle-status">Toggle Status</option>
+                            
                             
                           </select>
                         </td>

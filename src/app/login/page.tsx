@@ -12,8 +12,6 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [masterKey, setMasterKey] = useState('');
-  
-  // State to check if it's an admin login
   const [isAdminLogin, setIsAdminLogin] = useState(false);
 
   // States for messages and loading
@@ -24,8 +22,7 @@ const LoginPage = () => {
     event.preventDefault();
     setIsLoading(true);
     setError('');
-
-    // Backend ko bhejne wala data taiyaar kar rahe hain
+    
     const payload = {
       email,
       password: isAdminLogin ? undefined : password,
@@ -34,28 +31,23 @@ const LoginPage = () => {
 
     try {
       const response = await axios.post('http://localhost:5000/login', payload);
-
-      // Backend se token aur user ka object (jisme role hai) receive karna
       const { token, user } = response.data;
       
-      // Token ko browser ki memory (localStorage) mein save karna
+      // Token aur user data ko browser ki memory mein save karna
       localStorage.setItem('blog_token', token);
+      localStorage.setItem('blog_user', JSON.stringify(user));
 
-      // === YEH HAI ASLI REDIRECTION KA LOGIC ===
-      // Faisla lene ka samay!
+      // Page ko refresh karke redirect karna
       if (user && user.role === 'admin') {
-        // Agar user ka role 'admin' hai, toh usse admin dashboard par bhejo.
-        router.push('/admin/dashboard');
+        window.location.href = '/admin/dashboard';
       } else {
-        // Warna usse normal user ke dashboard par bhejo.
-        router.push('/dashboard');
+        window.location.href = '/dashboard';
       }
 
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+      setIsLoading(false); // Error aane par loading ko band karna zaroori hai
+    } 
   };
 
   return (
@@ -64,7 +56,7 @@ const LoginPage = () => {
         <h1 className="text-2xl font-bold text-center text-gray-800">Login to Your Account</h1>
         
         <form onSubmit={handleLogin} className="space-y-6">
-          {/* Email Input (Always visible) */}
+          {/* Email Input */}
           <div>
             <label htmlFor="email">Email</label>
             <input
@@ -76,8 +68,7 @@ const LoginPage = () => {
               className="w-full px-3 py-2 mt-1 border rounded-md"
             />
           </div>
-
-          {/* Conditional Input Field (Password or Master Key) */}
+          {/* Conditional Input (Password or Master Key) */}
           {isAdminLogin ? (
             <div>
               <label htmlFor="masterKey">Master Key</label>
@@ -103,7 +94,6 @@ const LoginPage = () => {
               />
             </div>
           )}
-
           {/* Admin Login Checkbox */}
           <div className="flex items-center">
             <input
@@ -117,7 +107,6 @@ const LoginPage = () => {
               Login as Admin
             </label>
           </div>
-
           {/* Submit Button */}
           <button
             type="submit"
