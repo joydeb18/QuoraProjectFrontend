@@ -4,6 +4,7 @@ import RoleProtectedRoute from "@/app/components/RoleProtectedRoute";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Link from "next/link"; // Link ko import karna zaroori hai
 
 // User ke data type ke liye ek interface banaya
 interface User {
@@ -11,7 +12,7 @@ interface User {
   username: string;
   email: string;
   role: 'user' | 'admin';
-  status: 'active' | 'disabled' | 'deleted';
+  status: 'active' | 'disabled';
 }
 
 const AdminDashboardPage = () => {
@@ -33,7 +34,6 @@ const AdminDashboardPage = () => {
             
             const headers = { 'x-auth-token': token };
 
-            // Promise.all se hum dono API calls ek saath bhej rahe hain
             const [activeUsersRes, deletedUsersRes] = await Promise.all([
                 axios.get('http://localhost:5000/api/users', { headers }),
                 axios.get('http://localhost:5000/api/users/deleted', { headers })
@@ -60,7 +60,7 @@ const AdminDashboardPage = () => {
         fetchAllUsers();
     }, []);
 
-    // Dropdown se action handle karne wala function
+    // Dropdown se action handle karne wala function (yeh jaisa tha waisa hi hai)
     const handleAction = async (userId: string, action: string) => {
         const token = localStorage.getItem('blog_token');
         if (!token) {
@@ -72,14 +72,9 @@ const AdminDashboardPage = () => {
         const userToActOn = users.find(u => u._id === userId);
 
         if (action === 'delete') {
-            // User se confirmation lena
             if (window.confirm('Are you sure you want to permanently delete this user?')) {
                 try {
-                    // === YEH HAI ASLI DELETE API CALL ===
-                    // Hum backend ko delete request bhej rahe hain
                     await axios.delete(`http://localhost:5000/api/users/${userId}`, { headers });
-                    
-                    // Success hone par, dono tables ko turant refresh karo
                     alert('User deleted successfully!');
                     fetchAllUsers(); 
                 } catch (err) {
@@ -90,26 +85,37 @@ const AdminDashboardPage = () => {
             const newStatus = userToActOn?.status === 'active' ? 'disabled' : 'active';
             try {
                 await axios.put(`http://localhost:5000/api/users/${userId}/status`, { status: newStatus }, { headers });
-                fetchAllUsers(); // List ko refresh karo
+                fetchAllUsers();
             } catch (err) {
                 alert('Failed to update status.');
             }
-        } 
+        } else if (action === 'toggle-role') {
+            const newRole = userToActOn?.role === 'user' ? 'admin' : 'user';
+             try {
+                await axios.put(`http://localhost:5000/api/users/${userId}/role`, { role: newRole }, { headers });
+                fetchAllUsers();
+            } catch (err) {
+                alert('Failed to update role.');
+            }
+        }
     };
 
-   
     return (
       <RoleProtectedRoute requiredRole="admin">
         <div className="p-4 md:p-8">
+          {/* === YAHAN BADLAV KIYA GAYA HAI === */}
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-3xl font-extrabold text-red-600">Admin Control Panel</h1>
-              <p className="text-lg text-gray-700">Welcome, {username || 'Master'}!</p>
+              <p className="text-lg text-gray-700">Welcome, {username || 'Master Joy'}!</p>
             </div>
-           
+            {/* Logout button hata diya aur 'All Posts' ka button add kar diya */}
+            <Link href="/admin/posts" className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition">
+              All Posts
+            </Link>
           </div>
           
-          {/* Active Users Table */}
+          {/* Active Users Table (yeh jaisa tha waisa hi hai) */}
           <div className="mt-8 border rounded-lg p-4 bg-white shadow-md">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">Active & Disabled Users</h2>
             {isLoading ? ( <p>Loading user list...</p> ) : 
@@ -141,8 +147,8 @@ const AdminDashboardPage = () => {
                           <select onChange={(e) => {handleAction(user._id, e.target.value); e.target.value = ""}} className="border rounded p-1">
                             <option value="">Select Action</option>
                             <option value="delete">Delete</option>
-                            
-                            
+                            <option value="toggle-status">Toggle Status</option>
+                            <option value="toggle-role">Toggle Role</option>
                           </select>
                         </td>
                       </tr>
@@ -153,7 +159,7 @@ const AdminDashboardPage = () => {
             )}
           </div>
 
-          {/* Deleted Users Table */}
+          {/* Deleted Users Table (yeh jaisa tha waisa hi hai) */}
           {!isLoading && deletedUsers.length > 0 && (
             <div className="mt-8 border rounded-lg p-4 bg-gray-50 shadow-md">
               <h2 className="text-2xl font-bold text-gray-700 mb-4">Deleted Users</h2>
