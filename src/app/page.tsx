@@ -16,8 +16,6 @@ export default function Home() {
           Explore Posts
         </a>
       </section>
-
-      
     </div>
   );
 }
