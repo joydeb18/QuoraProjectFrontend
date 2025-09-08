@@ -1,6 +1,6 @@
 'use client';
 
-import RoleProtectedRoute from "@/app/components/RoleProtectedRoute";
+import RoleProtectedRoute from "@/app/components/RoleProtectedRoute"; // <<< PATH THEEK KAR DIYA HAI
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
