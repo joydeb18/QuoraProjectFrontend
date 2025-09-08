@@ -6,16 +6,17 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 
-// ... (Post interface waisa hi rahega) ...
+// Post ke data type mein 'imageUrl' add kiya
 interface Post {
   _id: string;
   title: string;
   content: string;
-  author: { username: string };
+  author: {
+    username: string;
+  };
   createdAt: string;
   imageUrl?: string;
 }
-
 
 const ViewPostPage = () => {
     const params = useParams();
@@ -55,7 +56,6 @@ const ViewPostPage = () => {
         }
     };
 
-
     if (isLoading) { return <div className="text-center py-10">Loading post...</div>; }
     if (error) { return <div className="text-center py-10 text-red-500">{error}</div>; }
 
@@ -81,8 +81,9 @@ const ViewPostPage = () => {
                         <span className="mx-2">&bull;</span>
                         <span>{new Date(post.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                     </div>
-                    {/* === YEH HAI NAYA BADLAV === */}
-                    {/* Post ka HTML content ab 'dangerouslySetInnerHTML' se render hoga */}
+
+                    {/* === YEH HAI ASLI BADLAV === */}
+                    {/* Hum 'prose' class ka use kar rahe hain jo HTML ko automatically style kar degi */}
                     <div 
                         className="prose lg:prose-xl max-w-full text-gray-800"
                         dangerouslySetInnerHTML={{ __html: post.content }}
