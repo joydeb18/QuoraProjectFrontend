@@ -2,20 +2,24 @@
 
 import RoleProtectedRoute from "@/app/components/RoleProtectedRoute";
 import Link from "next/link";
-import { useState, DragEvent, ChangeEvent } from "react"; // Types ko import kiya
+import { useState, DragEvent, ChangeEvent } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import dynamic from 'next/dynamic';
+
+// Hum TiptapEditor ko dynamically import kar rahe hain taaki SSR error na aaye
+const TiptapEditor = dynamic(() => import('@/app/components/TiptapEditor'), { ssr: false });
 
 const CreatePostPage = () => {
     const router = useRouter();
-    // Form ke data ke liye states
     const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
+    const [content, setContent] = useState('');
+    
+    // === IMAGE WALA LOGIC WAPAS ADD KIYA GAYA HAI ===
     const [image, setImage] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [isDragging, setIsDragging] = useState(false); // Drag event ko track karne ke liye
+    const [isDragging, setIsDragging] = useState(false);
 
-    // Messages aur loading ke liye states
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -25,47 +29,35 @@ const CreatePostPage = () => {
         if (file && file.type.startsWith('image/')) {
             setImage(file);
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string);
-            };
+            reader.onloadend = () => { setImagePreview(reader.result as string); };
             reader.readAsDataURL(file);
         } else {
             alert("Please select an image file (png, jpg, gif).");
         }
     };
 
-    // "Upload a file" par click karne par
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        if (file) {
-            handleFile(file);
-        }
+        if (file) { handleFile(file); }
     };
 
     // Drag & Drop Functions
     const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
-        event.preventDefault();
-        setIsDragging(true);
+        event.preventDefault(); setIsDragging(true);
     };
-
     const handleDragLeave = (event: DragEvent<HTMLDivElement>) => {
-        event.preventDefault();
-        setIsDragging(false);
+        event.preventDefault(); setIsDragging(false);
     };
-
     const handleDrop = (event: DragEvent<HTMLDivElement>) => {
         event.preventDefault();
         setIsDragging(false);
         const file = event.dataTransfer.files?.[0];
-        if (file) {
-            handleFile(file);
-        }
+        if (file) { handleFile(file); }
     };
 
-    // Form submit karne par
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        if (!title || !description) {
+        if (!title || content.length < 15) {
             setError("Title aur Description, dono zaroori hain.");
             return;
         }
@@ -76,26 +68,18 @@ const CreatePostPage = () => {
 
         const formData = new FormData();
         formData.append('title', title);
-        formData.append('content', description);
-        if (image) {
-            formData.append('image', image);
-        }
+        formData.append('content', content);
+        if (image) { formData.append('image', image); }
 
         try {
             const token = localStorage.getItem('blog_token');
             if (!token) throw new Error("Aap logged-in nahi hain.");
 
-            const headers = { 
-                'x-auth-token': token,
-                'Content-Type': 'multipart/form-data'
-            };
-
+            const headers = { 'x-auth-token': token, 'Content-Type': 'multipart/form-data' };
             await axios.post('http://localhost:5000/api/posts', formData, { headers });
             
-            setMessage("Post successfully ban gaya! Aapko posts waale page par redirect kiya jaa raha hai...");
-            setTimeout(() => {
-                router.push('/admin/posts');
-            }, 2000);
+            setMessage("Post successfully ban gaya! Redirecting...");
+            setTimeout(() => { router.push('/admin/posts'); }, 2000);
 
         } catch (err: any) {
             setError(err.response?.data?.message || "Post banane mein problem aayi.");
@@ -108,9 +92,7 @@ const CreatePostPage = () => {
         <div className="p-4 md:p-8">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-extrabold text-gray-800">Create a New Post</h1>
-            <Link href="/admin/posts" className="text-indigo-600 hover:underline">
-              &larr; Back to All Posts
-            </Link>
+            <Link href="/admin/posts" className="text-indigo-600 hover:underline">&larr; Back to All Posts</Link>
           </div>
           
           <form onSubmit={handleSubmit} className="mt-8 p-6 bg-white rounded-lg shadow-md space-y-6">
@@ -120,10 +102,14 @@ const CreatePostPage = () => {
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-lg font-medium text-gray-700">Post Description <span className="text-red-500">*</span></label>
-              <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={10} className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm" placeholder="Aapke post ka poora content yahan likhein..." required />
+              <label htmlFor="description" className="block text-lg font-medium text-gray-700 mb-2">Post Description <span className="text-red-500">*</span></label>
+              <TiptapEditor
+                content={content}
+                onChange={(newContent) => setContent(newContent)}
+              />
             </div>
-
+            
+            {/* === IMAGE UPLOAD WALA SECTION WAPAS ADD KIYA GAYA HAI === */}
             <div>
               <label htmlFor="image" className="block text-lg font-medium text-gray-700">Featured Image (Optional)</label>
               <div 
@@ -158,6 +144,6 @@ const CreatePostPage = () => {
         </div>
       </RoleProtectedRoute>
     );
-  };
-  
-  export default CreatePostPage;
+};
+
+export default CreatePostPage;
