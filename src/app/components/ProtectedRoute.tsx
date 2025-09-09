@@ -4,18 +4,13 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
-interface RoleProtectedRouteProps {
-  children: React.ReactNode;
-  requiredRole: 'user' | 'admin';
-}
-
-const RoleProtectedRoute = ({ children, requiredRole }: RoleProtectedRouteProps) => {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter();
-    const [isAuthorized, setIsAuthorized] = useState(false);
+    const [isVerified, setIsVerified] = useState(false);
 
     useEffect(() => {
         // === YEH HAI ASLI BADLAV ===
-        // Yahan bhi hum pehle check kar rahe hain ki hum browser mein hain ya nahi
+        // Hum pehle check kar rahe hain ki hum browser mein hain ya nahi
         if (typeof window !== 'undefined') {
             const token = localStorage.getItem('blog_token');
             if (!token) {
@@ -24,23 +19,13 @@ const RoleProtectedRoute = ({ children, requiredRole }: RoleProtectedRouteProps)
             }
 
             try {
-                const decodedToken: { user: { role: string }, exp: number } = jwtDecode(token);
+                const decodedToken: { exp: number } = jwtDecode(token);
                 if (decodedToken.exp * 1000 < Date.now()) {
                     localStorage.removeItem('blog_token');
                     localStorage.removeItem('blog_user');
                     router.push('/login');
-                    return;
-                }
-                
-                const userRole = decodedToken.user.role;
-                if (userRole === requiredRole) {
-                    setIsAuthorized(true);
                 } else {
-                    if (userRole === 'admin') {
-                        router.push('/admin/dashboard');
-                    } else {
-                        router.push('/dashboard');
-                    }
+                    setIsVerified(true);
                 }
             } catch (error) {
                 localStorage.removeItem('blog_token');
@@ -48,12 +33,12 @@ const RoleProtectedRoute = ({ children, requiredRole }: RoleProtectedRouteProps)
                 router.push('/login');
             }
         }
-    }, [router, requiredRole]);
+    }, [router]);
 
-    if (!isAuthorized) {
+    if (!isVerified) {
         return (
             <div className="flex justify-center items-center h-screen">
-                <p className="text-xl">Checking permissions...</p>
+                <p className="text-xl">Checking Access...</p>
             </div>
         );
     }
@@ -61,4 +46,4 @@ const RoleProtectedRoute = ({ children, requiredRole }: RoleProtectedRouteProps)
     return <>{children}</>;
 };
 
-export default RoleProtectedRoute;
+export default ProtectedRoute;
