@@ -1,10 +1,11 @@
 'use client';
 
-import RoleProtectedRoute from "@/app/components/RoleProtectedRoute"; // <<< PATH THEEK KAR DIYA HAI
+import RoleProtectedRoute from "@/app/components/RoleProtectedRoute";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+// Post ka structure
 interface Post {
   _id: string;
   title: string;
@@ -19,18 +20,33 @@ const AllPostsPage = () => {
 
     useEffect(() => {
         const fetchPosts = async () => {
+            setIsLoading(true);
+            setError('');
             try {
                 const token = localStorage.getItem('blog_token');
-                if (!token) throw new Error("Aap logged-in nahi hain.");
+                if (!token) {
+                    throw new Error("Aap logged-in nahi hain. Please login karein.");
+                }
 
                 const headers = { 'x-auth-token': token };
-                const response = await axios.get('http://localhost:5000/api/posts', { headers });
                 
-                setPosts(response.data.posts);
+                const response = await axios.get('https://quoraproject-production.up.railway.app/api/posts', { headers });
+                
+                console.log("API Response Data:", response.data);
+
+                // === YAHI ASLI CHANGE HAI ===
+                // Hum ab seedha response.data.posts ko check kar rahe hain,
+                // kyunki console se pata chala ki posts iske andar hain.
+                if (response.data && Array.isArray(response.data.posts)) {
+                    setPosts(response.data.posts); 
+                } else {
+                    console.error("API response mein 'posts' key nahi hai ya woh ek array nahi hai:", response.data);
+                    throw new Error("API se mila data format sahi nahi hai.");
+                }
+                
             } catch (err: any) {
-                // JAASOOS: Browser ke console mein poora error dikhao
                 console.error("Posts fetch karne mein error:", err);
-                setError(err.response?.data?.message || "Posts ko fetch karne mein problem aayi.");
+                setError(err.response?.data?.message || err.message || "Posts load karne mein problem aayi.");
             } finally {
                 setIsLoading(false);
             }
@@ -39,44 +55,67 @@ const AllPostsPage = () => {
         fetchPosts();
     }, []);
 
+    // Baaki ka JSX code waisa hi hai, usmein koi change nahi hai
     return (
-      <RoleProtectedRoute requiredRole="admin">
-        <div className="p-4 md:p-8">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-extrabold text-gray-800">Post Management</h1>
-            <div className="flex items-center space-x-4">
-                <Link href="/admin/posts/new" className="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition">
-                    Create New Post
-                </Link>
-                <Link href="/admin/dashboard" className="text-indigo-600 hover:underline">
-                    &larr; Back to User Management
-                </Link>
+        <RoleProtectedRoute requiredRole="admin">
+            <div className="p-4 md:p-8">
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-3xl font-extrabold text-gray-800">Post Management</h1>
+                    <div className="flex items-center space-x-4">
+                        <Link href="/admin/posts/new" className="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition">
+                            + Create New Post
+                        </Link>
+                        <Link href="/admin/dashboard" className="text-indigo-600 hover:underline">
+                            &larr; Back to Dashboard
+                        </Link>
+                    </div>
+                </div>
+                
+                <div className="mt-8 overflow-hidden rounded-lg bg-white shadow-md">
+                    {isLoading ? (
+                        <p className="text-center py-10">Posts load ho rahe hain...</p>
+                    ) : error ? (
+                        <p className="text-red-500 text-center py-10">{error}</p>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full bg-white">
+                                <thead className="bg-gray-100">
+                                    <tr>
+                                        <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-600">Title</th>
+                                        <th className="py-3 px-4 border-b text-sm font-semibold text-gray-600">Author</th>
+                                        <th className="py-3 px-4 border-b text-sm font-semibold text-gray-600">Date</th>
+                                        <th className="py-3 px-4 border-b text-sm font-semibold text-gray-600">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                 {posts.length > 0 ? (
+                                     posts.map((post) => (
+                                         <tr key={post._id} className="text-center hover:bg-gray-50">
+                                             <td className="py-3 px-4 border-b text-left font-medium text-gray-800">{post.title}</td>
+                                             <td className="py-3 px-4 border-b text-gray-600">{post.author?.username || 'N/A'}</td>
+                                             <td className="py-3 px-4 border-b text-gray-600">{new Date(post.createdAt).toLocaleDateString()}</td>
+                                             <td className="py-3 px-4 border-b">
+                                                 <Link href={`/admin/posts/view/${post._id}`} className="text-indigo-600 hover:underline font-semibold">
+                                                     View / Edit
+                                                 </Link>
+                                             </td>
+                                         </tr>
+                                     ))
+                                 ) : ( 
+                                     <tr>
+                                         <td colSpan={4} className="text-center py-10 text-gray-500">
+                                             Database mein koi post nahi mila.
+                                         </td>
+                                     </tr>
+                                 )}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
             </div>
-          </div>
-          
-          <div className="mt-8 border rounded-lg p-4 bg-white shadow-md">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">All Blog Posts</h2>
-            {isLoading ? ( <p className="text-center py-4">Loading posts...</p> ) : 
-             error ? ( <p className="text-red-500 text-center py-4">{error}</p> ) : 
-            (
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border">
-                   <thead className="bg-gray-200"><tr><th className="py-2 px-4 border text-left">Title</th><th className="py-2 px-4 border">Author</th><th className="py-2 px-4 border">Date</th><th className="py-2 px-4 border">Actions</th></tr></thead>
-                   <tbody>
-                    {posts.length > 0 ? posts.map((post) => (
-                      <tr key={post._id} className="text-center hover:bg-gray-50">
-                        <td className="py-2 px-4 border text-left font-medium">{post.title}</td><td className="py-2 px-4 border">{post.author?.username || 'N/A'}</td><td className="py-2 px-4 border">{new Date(post.createdAt).toLocaleDateString()}</td>
-                        <td className="py-2 px-4 border"><Link href={`/admin/posts/view/${post._id}`} className="text-green-600 hover:underline font-semibold">View Post</Link></td>
-                      </tr>
-                    )) : ( <tr><td colSpan={4} className="text-center py-8 text-gray-500">Abhi tak koi post nahi banaya gaya hai.</td></tr>)}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        </div>
-      </RoleProtectedRoute>
+        </RoleProtectedRoute>
     );
-  };
-  
-  export default AllPostsPage;
+};
+ 
+export default AllPostsPage;
