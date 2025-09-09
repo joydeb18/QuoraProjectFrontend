@@ -14,6 +14,7 @@ const EditPostPage = () => {
     const params = useParams();
     const postId = params.id;
 
+
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [image, setImage] = useState<File | null>(null);
@@ -22,8 +23,7 @@ const EditPostPage = () => {
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const backendUrl = "http://localhost:5000";
-
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     // Page load hote hi purana post data fetch karo
     useEffect(() => {
         if (!postId) return;

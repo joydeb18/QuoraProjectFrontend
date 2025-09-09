@@ -21,7 +21,7 @@ const DashboardPage = () => {
     const [posts, setPosts] = useState<Post[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
-    const backendUrl = "http://localhost:5000";
+     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     useEffect(() => {
         const fetchPosts = async () => {

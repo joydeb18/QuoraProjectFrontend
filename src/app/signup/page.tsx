@@ -1,125 +1,68 @@
-// 'use client' likhna zaroori hai
 'use client';
 
 import { useState } from 'react';
-// Step A: Axios ko import karo
 import axios from 'axios';
 import Link from 'next/link';
 
-export default function SignupPage() {
-  // State variables waise hi rahenge
+const SignupPage = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Backend ka URL Vercel se le rahe hain
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  // Form submit handle karne wala function (ab axios ke saath)
   const handleSignup = async (event: React.FormEvent) => {
     event.preventDefault();
-    
+    setIsLoading(true);
     setMessage('');
     setError('');
-
     try {
-      // Step B: axios.post ka use karke API call karna
-      // Pehla argument: backend ka URL
-      // Dusra argument: data jo bhejna hai (JavaScript object)
-      const response = await axios.post('http://localhost:5000/signup', {
+      // 'localhost' ko naye variable se replace kiya
+      const response = await axios.post(`${backendUrl}/signup`, {
         username,
         email,
         password,
       });
-
-      // Step C: Axios se response seedha .data property me milta hai
-      // Humein response.json() karne ki zaroorat nahi hai
       setMessage(response.data.message);
-      
-      // Success hone par form fields ko clear kar do
       setUsername('');
       setEmail('');
       setPassword('');
-
     } catch (err: any) {
-      // Step D: Axios me error handling aasan hai
-      // Agar backend se koi bhi error (400, 500 etc.) aata hai,
-      // to woh seedha catch block me aa jayega.
-      if (err.response && err.response.data && err.response.data.message) {
-        // Backend se bheja gaya error message
-        setError(err.response.data.message);
-      } else {
-        // Network ya koi aur error
-        setError('Signup failed. Network error ya server down ho sakta hai.');
-      }
+      setError(err.response?.data?.message || 'Signup failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
-
+  
   return (
     <main className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center text-gray-800">Create Account (with Axios)</h1>
-        
+        <h1 className="text-2xl font-bold text-center text-gray-800">Create a New Account</h1>
         <form onSubmit={handleSignup} className="space-y-6">
-          {/* Username Input */}
-          <div>
-            <label htmlFor="username">Username</label>
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              className="w-full px-3 py-2 mt-1 border rounded-md"
-            />
-          </div>
-          {/* Email Input */}
-          <div>
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-3 py-2 mt-1 border rounded-md"
-            />
-          </div>
-          {/* Password Input */}
-          <div>
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-3 py-2 mt-1 border rounded-md"
-            />
-          </div>
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full py-2 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
-          >
-            Sign Up
-          </button>
-
-          
+            <div>
+                <label htmlFor="username">Username</label>
+                <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} required className="w-full px-3 py-2 mt-1 border rounded-md" />
+            </div>
+            <div>
+                <label htmlFor="email">Email</label>
+                <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full px-3 py-2 mt-1 border rounded-md" />
+            </div>
+            <div>
+                <label htmlFor="password">Password</label>
+                <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full px-3 py-2 mt-1 border rounded-md" />
+            </div>
+            <button type="submit" className="w-full py-2 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:bg-indigo-400" disabled={isLoading}>{isLoading ? 'Creating Account...' : 'Sign Up'}</button>
         </form>
-
-        {/* Success and Error Messages */}
         {message && <p className="mt-4 text-center text-green-600">{message}</p>}
         {error && <p className="mt-4 text-center text-red-600">{error}</p>}
-      <p className="text-center text-sm text-gray-600 pt-4">
-          Already have an account?{' '}
-          <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-            Login here
-          </Link>
-        </p>
+        <p className="text-center text-sm text-gray-600 pt-4">Already have an account?{' '} <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">Login here</Link></p>
       </div>
-
-  
     </main>
   );
-}
+};
+
+export default SignupPage;

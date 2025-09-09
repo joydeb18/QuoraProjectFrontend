@@ -24,6 +24,8 @@ const AdminDashboardPage = () => {
     const [deletedUsers, setDeletedUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+      // Backend ka URL Vercel se le rahe hain
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     useEffect(() => {
         const userDataString = localStorage.getItem('blog_user');
@@ -43,9 +45,9 @@ const AdminDashboardPage = () => {
                 // === YAHAN BADLAV KIYA GAYA HAI ===
                 // Hum ab sirf users ki list fetch kar rahe hain, posts ki nahi
                 const [activeUsersRes, deletedUsersRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/users', { headers }),
-                    axios.get('http://localhost:5000/api/users/deleted', { headers })
-                ]);
+                        axios.get(`${backendUrl}/api/users`, { headers }),
+          axios.get(`${backendUrl}/api/users/deleted`, { headers })
+           ]);
                 
                 setUsers(activeUsersRes.data.users);
                 setDeletedUsers(deletedUsersRes.data.users);
@@ -70,8 +72,8 @@ const AdminDashboardPage = () => {
         if (action === 'delete') {
             if (window.confirm('Are you sure you want to delete this user?')) {
                 try {
-                    await axios.delete(`http://localhost:5000/api/users/${userId}`, { headers });
-                    window.location.reload(); 
+                     await axios.delete(`${backendUrl}/api/users/${userId}`, { headers });
+                      window.location.reload(); 
                 } catch (err) { alert('Failed to delete user.'); }
             }
         }
