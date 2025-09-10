@@ -6,57 +6,55 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 
-// Single Post ka structure
-interface Post { 
-    _id: string; 
-    title: string; 
-    content: string; 
-    author: { username: string; }; 
-    createdAt: string; 
-    imageUrl?: string; 
+// Hata di gayi line (Yahi badlav hai)
+// import 'react-quill/dist/quill.snow.css'; 
+
+// Post ka structure kaisa hoga
+interface Post {
+    _id: string;
+    title: string;
+    content: string;
+    author: { username: string; };
+    createdAt: string;
+    imageUrl?: string;
 }
 
 const ViewPostPage = () => {
     const params = useParams();
     const router = useRouter();
-    const postId = params.id as string; // URL se post ki ID
-    
+    const postId = params.id as string;
+
     // State variables
     const [post, setPost] = useState<Post | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
-    const backendUrl = "https://quoraproject-production.up.railway.app";
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
     // Component load hone par single post fetch karega
     useEffect(() => {
         if (!postId) return;
-
         const fetchPost = async () => {
             try {
                 const token = localStorage.getItem('blog_token');
                 if (!token) throw new Error("Aap logged-in nahi hain.");
-                
+
                 const response = await axios.get(`${backendUrl}/api/posts/${postId}`, {
                     headers: { 'x-auth-token': token }
                 });
 
-                //<-- YAHAN BADLAV KIYA GAYA HAI
-                // API se aane wale response object se 'post' ko extract kiya ja raha hai.
-                setPost(response.data.post); 
-                
+                setPost(response.data.post);
+
             } catch (err: any) {
                 setError(err.response?.data?.message || "Post fetch karne mein problem aayi.");
             } finally {
                 setIsLoading(false);
             }
         };
-
         fetchPost();
-    }, [postId]);
+    }, [postId, backendUrl]);
 
     // Post delete karne ke liye function
     const handleDelete = async () => {
-        // Delete karne se pehle confirmation
         if (window.confirm("Kya aap sach mein is post ko delete karna chahte hain?")) {
             try {
                 const token = localStorage.getItem('blog_token');
@@ -65,9 +63,9 @@ const ViewPostPage = () => {
                 await axios.delete(`${backendUrl}/api/posts/${postId}`, {
                     headers: { 'x-auth-token': token }
                 });
-                
+
                 alert("Post successfully delete ho gaya!");
-                router.push('/admin/posts'); // All posts page par redirect
+                router.push('/admin/posts');
             } catch (err: any) {
                 alert(err.response?.data?.message || "Post delete karne mein problem aayi.");
             }
@@ -84,11 +82,16 @@ const ViewPostPage = () => {
                     <>
                         <div className="flex justify-between items-center mb-6">
                             <Link href="/admin/posts" className="text-indigo-600 hover:underline">&larr; Back to All Posts</Link>
-                            <button onClick={handleDelete} className="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition">
-                                Delete Post
-                            </button>
+                            <div className="flex items-center space-x-4">
+                                <Link href={`/admin/posts/edit/${post._id}`} className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition">
+                                    Edit Post
+                                </Link>
+                                <button onClick={handleDelete} className="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition">
+                                    Delete Post
+                                </button>
+                            </div>
                         </div>
-                      
+
                         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                             {post.imageUrl && (
                                 <img src={`${backendUrl}/${post.imageUrl}`} alt={post.title} className="w-full h-auto max-h-[500px] object-cover" />
@@ -100,19 +103,19 @@ const ViewPostPage = () => {
                                     <span className="mx-2">&bull;</span>
                                     <span>{new Date(post.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                                 </div>
-                                {/* 'whitespace-pre-wrap' se line breaks aur spaces preserve honge */}
-                                <div className="text-gray-800 text-lg leading-relaxed whitespace-pre-wrap">
-                                   {post.content}
-                                </div>
+                                {/* Yeh 'prose' class ab saari styling karegi */}
+                                <div className="prose lg:prose-xl max-w-full text-gray-800"
+                                     dangerouslySetInnerHTML={{ __html: post.content }}
+                                />
                             </div>
                         </div>
                     </>
                 ) : (
-                     <div className="text-center py-10 text-gray-500">Post nahi mila.</div>
+                    <div className="text-center py-10 text-gray-500">Post nahi mila.</div>
                 )}
             </div>
         </RoleProtectedRoute>
     );
 };
- 
+
 export default ViewPostPage;
