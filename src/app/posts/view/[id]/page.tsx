@@ -57,7 +57,7 @@ const ViewPostPage = () => {
           <p className="text-center text-red-500">{error}</p>
         ) : post ? (
           <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
-            {post.imageUrl && <img src={`${backendUrl}/${post.imageUrl}`} alt={post.title} className="w-full h-96 object-cover mb-6 rounded"/>}
+            {post.imageUrl && <img src={`${backendUrl}/${post.imageUrl}`} alt={post.title} className="w-full h-96 object-contain mb-6 rounded"/>}
             <h1 className="text-4xl font-extrabold text-gray-800 mb-4">{post.title}</h1>
             <p className="text-lg text-gray-600 mb-4">By {post.author.username}</p>
             <div className="prose lg:prose-xl max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />

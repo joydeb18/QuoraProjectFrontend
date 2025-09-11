@@ -94,7 +94,7 @@ const ViewPostPage = () => {
 
                         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                             {post.imageUrl && (
-                                <img src={`${backendUrl}/${post.imageUrl}`} alt={post.title} className="w-full h-auto max-h-[500px] object-cover" />
+                                <img src={`${backendUrl}/${post.imageUrl}`} alt={post.title} className="w-full h-auto max-h-[500px] object-contain" />
                             )}
                             <div className="p-6 md:p-8">
                                 <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">{post.title}</h1>
