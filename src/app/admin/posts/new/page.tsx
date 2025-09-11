@@ -11,8 +11,8 @@ const PostForm = () => {
     const searchParams = useSearchParams();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [image, setImage] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [images, setImages] = useState<File[]>([]);
+    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -66,14 +66,22 @@ const PostForm = () => {
     }, [selectedCategory, backendUrl]);
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            setImage(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string);
-            };
-            reader.readAsDataURL(file);
+        const files = event.target.files;
+        if (files) {
+            const newImages = Array.from(files);
+            setImages(prevImages => [...prevImages, ...newImages]);
+
+            const newPreviews: string[] = [];
+            newImages.forEach(file => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    newPreviews.push(reader.result as string);
+                    if (newPreviews.length === newImages.length) {
+                        setImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
         }
     };
 
@@ -93,9 +101,9 @@ const PostForm = () => {
         formData.append('content', content);
         if (selectedCategory) formData.append('category', selectedCategory);
         if (selectedSubcategory) formData.append('subcategory', selectedSubcategory);
-        if (image) {
-            formData.append('image', image);
-        }
+        images.forEach((file, index) => {
+            formData.append(`images`, file);
+        });
 
         try {
             const token = localStorage.getItem('blog_token');
@@ -171,12 +179,13 @@ const PostForm = () => {
 
                 {/* === 2. IMAGE UPLOAD BUTTON THEEK KAR DIYA GAYA HAI === */}
                 <div>
-                    <label htmlFor="image" className="block text-lg font-medium text-gray-700">Featured Image (Optional)</label>
+                    <label htmlFor="images" className="block text-lg font-medium text-gray-700">Featured Images (Optional)</label>
                     <input 
                         type="file" 
-                        id="image" 
+                        id="images" 
                         onChange={handleImageChange} 
                         accept="image/png, image/jpeg, image/gif" 
+                        multiple
                         className="mt-2 block w-full text-sm text-slate-500
                             file:mr-4 file:py-2 file:px-4
                             file:rounded-full file:border-0
@@ -186,11 +195,15 @@ const PostForm = () => {
                     />
                 </div>
 
-                {imagePreview && (
+                {imagePreviews.length > 0 && (
                     <div>
-                        <h3 className="text-lg font-medium text-gray-700">Image Preview:</h3>
-                        <div className="mt-2 border rounded-md p-2">
-                            <img src={imagePreview} alt="Selected preview" className="max-h-60 rounded-md mx-auto"/>
+                        <h3 className="text-lg font-medium text-gray-700">Image Previews:</h3>
+                        <div className="mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {imagePreviews.map((preview, index) => (
+                                <div key={index} className="border rounded-md p-2">
+                                    <img src={preview} alt={`Selected preview ${index + 1}`} className="max-h-40 w-full object-contain rounded-md"/>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}

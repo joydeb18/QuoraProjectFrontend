@@ -16,7 +16,7 @@ interface Post {
     content: string;
     author: { username: string; };
     createdAt: string;
-    imageUrl?: string;
+    imageUrls?: string[];
 }
 
 const ViewPostPage = () => {
@@ -93,8 +93,17 @@ const ViewPostPage = () => {
                         </div>
 
                         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                            {post.imageUrl && (
-                                <img src={`${backendUrl}/${post.imageUrl}`} alt={post.title} className="w-full h-auto max-h-[500px] object-contain" />
+                            {post.imageUrls && post.imageUrls.length > 0 && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                                    {post.imageUrls.map((url, index) => (
+                                        <img
+                                            key={index}
+                                            src={`${backendUrl}/${url}`}
+                                            alt={`Post image ${index + 1}`}
+                                            className="w-full h-auto max-h-[300px] object-contain rounded-lg shadow-md"
+                                        />
+                                    ))}
+                                </div>
                             )}
                             <div className="p-6 md:p-8">
                                 <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">{post.title}</h1>

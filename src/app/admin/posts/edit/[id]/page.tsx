@@ -17,8 +17,10 @@ const EditPostPage = () => {
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [image, setImage] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+    const [newImages, setNewImages] = useState<File[]>([]);
+    const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
+    const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
 
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
@@ -35,8 +37,9 @@ const EditPostPage = () => {
                 const post = response.data.post;
                 setTitle(post.title);
                 setContent(post.content);
-                if (post.imageUrl) {
-                    setImagePreview(`${backendUrl}/${post.imageUrl}`);
+                if (post.imageUrls && Array.isArray(post.imageUrls)) {
+                    setExistingImageUrls(post.imageUrls);
+                    console.log("Edit Page - Fetched imageUrls from backend:", post.imageUrls);
                 }
             } catch (err) {
                 setError("Post data fetch karne mein problem aayi.");
@@ -46,12 +49,22 @@ const EditPostPage = () => {
     }, [postId, backendUrl]);
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            setImage(file);
-            const reader = new FileReader();
-            reader.onloadend = () => { setImagePreview(reader.result as string); };
-            reader.readAsDataURL(file);
+        const files = event.target.files;
+        if (files) {
+            const newSelectedImages = Array.from(files);
+            setNewImages(prevImages => [...prevImages, ...newSelectedImages]);
+
+            const newPreviews: string[] = [];
+            newSelectedImages.forEach(file => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    newPreviews.push(reader.result as string);
+                    if (newPreviews.length === newSelectedImages.length) {
+                        setNewImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
         }
     };
 
@@ -63,9 +76,11 @@ const EditPostPage = () => {
         setError('');
 
         const formData = new FormData();
-        formData.append('title', title);
+                formData.append('title', title);
         formData.append('content', content);
-        if (image) { formData.append('image', image); }
+        newImages.forEach((file, index) => {
+            formData.append(`images`, file);
+        });
 
         try {
             const token = localStorage.getItem('blog_token');
@@ -98,10 +113,37 @@ const EditPostPage = () => {
               {content && <TiptapEditor content={content} onChange={(newContent) => setContent(newContent)} />}
             </div>
             <div>
-              <label htmlFor="image" className="block text-lg font-medium text-gray-700">Change Featured Image (Optional)</label>
-              <input type="file" id="image" onChange={handleImageChange} accept="image/*" className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100"/>
+              <label htmlFor="newImages" className="block text-lg font-medium text-gray-700">Add New Images (Optional)</label>
+              <input type="file" id="newImages" onChange={handleImageChange} accept="image/*" multiple className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100"/>
             </div>
-            {imagePreview && ( <div><h3 className="text-lg font-medium text-gray-700">Image Preview:</h3><div className="mt-2 border rounded-md p-2"><img src={imagePreview} alt="Preview" className="max-h-60 rounded-md mx-auto"/></div></div> )}
+            {existingImageUrls.length > 0 && (
+                <div>
+                    <h3 className="text-lg font-medium text-gray-700">Existing Images:</h3>
+                    <div className="mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {existingImageUrls.map((url, index) => {
+                            
+                            return (
+                                <div key={index} className="border rounded-md p-2">
+                                    <img src={`${backendUrl}/${url}`} alt={`Existing image ${index + 1}`} className="max-h-40 w-full object-contain rounded-md"/>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {newImagePreviews.length > 0 && (
+                <div>
+                    <h3 className="text-lg font-medium text-gray-700">New Image Previews:</h3>
+                    <div className="mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {newImagePreviews.map((preview, index) => (
+                            <div key={index} className="border rounded-md p-2">
+                                <img src={preview} alt={`New preview ${index + 1}`} className="max-h-40 w-full object-contain rounded-md"/>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
             {message && <p className="text-center text-green-600">{message}</p>}
             {error && <p className="text-center text-red-600">{error}</p>}
             <div className="text-right">
