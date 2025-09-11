@@ -28,7 +28,7 @@ const ViewPostPage = () => {
     const [post, setPost] = useState<Post | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
 
     // Component load hone par single post fetch karega
     useEffect(() => {

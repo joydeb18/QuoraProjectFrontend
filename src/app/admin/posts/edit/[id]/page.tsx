@@ -23,7 +23,7 @@ const EditPostPage = () => {
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
     // Page load hote hi purana post data fetch karo
     useEffect(() => {
         if (!postId) return;
@@ -43,7 +43,7 @@ const EditPostPage = () => {
             }
         };
         fetchPost();
-    }, [postId]);
+    }, [postId, backendUrl]);
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
