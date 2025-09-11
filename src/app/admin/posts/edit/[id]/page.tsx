@@ -39,7 +39,6 @@ const EditPostPage = () => {
                 setContent(post.content);
                 if (post.imageUrls && Array.isArray(post.imageUrls)) {
                     setExistingImageUrls(post.imageUrls);
-                    console.log("Edit Page - Fetched imageUrls from backend:", post.imageUrls);
                 }
             } catch (err) {
                 setError("Post data fetch karne mein problem aayi.");
