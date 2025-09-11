@@ -2,12 +2,13 @@
 
 import RoleProtectedRoute from "@/app/components/RoleProtectedRoute";
 import Link from "next/link";
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const CreatePostPage = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [image, setImage] = useState<File | null>(null);
@@ -15,6 +16,52 @@ const CreatePostPage = () => {
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [categories, setCategories] = useState<Array<{ _id: string; name: string; slug?: string }>>([]);
+    const [subcategories, setSubcategories] = useState<Array<{ _id: string; name: string; slug?: string }>>([]);
+    const [selectedCategory, setSelectedCategory] = useState<string>('');
+    const [selectedSubcategory, setSelectedSubcategory] = useState<string>('');
+
+    const getAuthHeaders = () => {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('blog_token') : null;
+        if (!token) throw new Error('Aap logged-in nahi hain.');
+        return { 'x-auth-token': token } as Record<string, string>;
+    };
+
+    useEffect(() => {
+        const catParam = searchParams.get('category') || '';
+        const subcatParam = searchParams.get('subcategory') || '';
+        if (catParam) setSelectedCategory(catParam);
+        if (subcatParam) setSelectedSubcategory(subcatParam);
+    }, [searchParams]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const headers = getAuthHeaders();
+                const response = await axios.get('http://localhost:8080/api/categories', { headers });
+                const list = response.data?.categories || [];
+                setCategories(Array.isArray(list) ? list : []);
+            } catch (err: any) {
+                // silent fail in form; show inline error on submit if needed
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
+        const fetchSubcategories = async () => {
+            if (!selectedCategory) { setSubcategories([]); return; }
+            try {
+                const headers = getAuthHeaders();
+                const response = await axios.get(`http://localhost:8080/api/categories/${encodeURIComponent(selectedCategory)}`, { headers });
+                const subs = response.data?.subcategories || [];
+                setSubcategories(Array.isArray(subs) ? subs : []);
+            } catch (err: any) {
+                setSubcategories([]);
+            }
+        };
+        fetchSubcategories();
+    }, [selectedCategory]);
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -42,6 +89,8 @@ const CreatePostPage = () => {
         const formData = new FormData();
         formData.append('title', title);
         formData.append('content', content);
+        if (selectedCategory) formData.append('category', selectedCategory);
+        if (selectedSubcategory) formData.append('subcategory', selectedSubcategory);
         if (image) {
             formData.append('image', image);
         }
@@ -56,7 +105,7 @@ const CreatePostPage = () => {
             };
 
             // === 1. API URL THEEK KAR DIYA GAYA HAI ===
-            await axios.post('https://quoraproject-production.up.railway.app/api/posts', formData, { headers });
+            await axios.post('http://localhost:8080/api/posts', formData, { headers });
             
             setMessage("Post successfully ban gaya! Redirect kar rahe hain...");
             setTimeout(() => {
@@ -79,6 +128,37 @@ const CreatePostPage = () => {
                 </div>
                 
                 <form onSubmit={handleSubmit} className="mt-8 p-6 bg-white rounded-lg shadow-md space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label htmlFor="category" className="block text-lg font-medium text-gray-700">Category</label>
+                            <select
+                                id="category"
+                                value={selectedCategory}
+                                onChange={(e) => { setSelectedCategory(e.target.value); setSelectedSubcategory(''); }}
+                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                            >
+                                <option value="">Select category</option>
+                                {categories.map((c) => (
+                                    <option key={c._id} value={c.slug || c._id}>{c.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label htmlFor="subcategory" className="block text-lg font-medium text-gray-700">Subcategory</label>
+                            <select
+                                id="subcategory"
+                                value={selectedSubcategory}
+                                onChange={(e) => setSelectedSubcategory(e.target.value)}
+                                disabled={!selectedCategory}
+                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
+                            >
+                                <option value="">Select subcategory</option>
+                                {subcategories.map((s) => (
+                                    <option key={s._id} value={s.slug || s._id}>{s.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
                     <div>
                         <label htmlFor="title" className="block text-lg font-medium text-gray-700">Post Title <span className="text-red-500">*</span></label>
                         <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required />
