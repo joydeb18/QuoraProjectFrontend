@@ -3,6 +3,9 @@
 import RoleProtectedRoute from "@/app/components/RoleProtectedRoute";
 import Link from "next/link";
 import { useEffect, useState, ChangeEvent, FormEvent, Suspense } from "react";
+import dynamic from 'next/dynamic';
+
+const TiptapEditor = dynamic(() => import('@/app/components/TiptapEditor'), { ssr: false });
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -174,7 +177,7 @@ const PostForm = () => {
 
                 <div>
                     <label htmlFor="content" className="block text-lg font-medium text-gray-700">Post Content <span className="text-red-500">*</span></label>
-                    <textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} rows={15} className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required />
+                    <TiptapEditor content={content} onChange={(newContent) => setContent(newContent)} />
                 </div>
 
                 {/* === 2. IMAGE UPLOAD BUTTON THEEK KAR DIYA GAYA HAI === */}
