@@ -2,8 +2,11 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
 const Header = () => {
+  const router = useRouter();
+  const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -30,6 +33,11 @@ const Header = () => {
           JoyBlog
         </Link>
         <nav className="flex items-center space-x-2 md:space-x-4">
+          {pathname !== '/' && (
+            <button onClick={() => router.back()} className="hover:opacity-80 transition" style={{color: '#B0B0B0'}}>
+              Back
+            </button>
+          )}
           <Link href="/" className="hover:opacity-80 transition" style={{color: '#B0B0B0'}}>Home</Link>
           <Link href="/about" className="hover:opacity-80 transition" style={{color: '#B0B0B0'}}>About</Link>
           <Link href="/contact" className="hover:opacity-80 transition" style={{color: '#B0B0B0'}}>Contact</Link>

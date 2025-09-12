@@ -4,7 +4,7 @@ import RoleProtectedRoute from "@/app/components/RoleProtectedRoute";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { jwtDecode } from 'jwt-decode';
 
 interface Post {
@@ -18,6 +18,7 @@ interface Post {
 }
 
 const SubcategoryPostsPage = () => {
+  const router = useRouter();
   const params = useParams();
   const categorySlug = params?.category as string;
   const subcategorySlug = params?.subcategory as string;
@@ -61,6 +62,9 @@ const SubcategoryPostsPage = () => {
   return (
     <RoleProtectedRoute requiredRole="user">
       <div className="p-4 md:p-8">
+        <button onClick={() => router.back()} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded mb-4">
+          Back
+        </button>
         <h1 className="text-3xl font-extrabold text-gray-800 mb-6">Posts</h1>
         {userRole === 'admin' && (
           <div className="mb-4">

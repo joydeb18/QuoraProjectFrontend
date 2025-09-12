@@ -4,7 +4,7 @@ import RoleProtectedRoute from "@/app/components/RoleProtectedRoute";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 interface Subcategory {
   _id: string;
@@ -13,6 +13,7 @@ interface Subcategory {
 }
 
 export default function UserSubcategoriesPage() {
+  const router = useRouter();
   const params = useParams();
   const categoryParam = (params?.category as string) || '';
 
@@ -48,6 +49,9 @@ export default function UserSubcategoriesPage() {
   return (
     <RoleProtectedRoute requiredRole="user">
       <div className="p-4 md:p-8">
+        <button onClick={() => router.back()} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded mb-4">
+          Back
+        </button>
         <h1 className="text-3xl font-extrabold text-gray-800 mb-6">{categoryName || 'Category'}</h1>
         {isLoading ? (
           <p className="text-center">Loading subcategories...</p>

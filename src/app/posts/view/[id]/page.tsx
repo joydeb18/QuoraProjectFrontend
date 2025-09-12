@@ -53,14 +53,8 @@ const ViewPostPage = () => {
   return (
     <RoleProtectedRoute requiredRole="user">
       <div className="p-4 md:p-8">
-        <button
-          onClick={() => router.back()}
-          className="mb-4 px-4 py-2 rounded-md transition-colors"
-          style={{backgroundColor: '#FF9800', color: '#FFFFFF'}}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFB74D'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FF9800'}
-        >
-          &larr; Back
+        <button onClick={() => router.back()} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded mb-4">
+          Back
         </button>
         {isLoading ? (
           <p className="text-center" style={{color: '#FFFFFF'}}>Loading post...</p>
