@@ -72,7 +72,7 @@ const ViewPostPage = () => {
         }
     };
 
-    if (isLoading) { return <div className="text-center py-10">Post load ho raha hai...</div>; }
+    if (isLoading) { return <div className="text-center py-10" style={{color: '#FFFFFF'}}>Post load ho raha hai...</div>; }
     if (error) { return <div className="text-center py-10 text-red-500">{error}</div>; }
 
     return (
@@ -83,23 +83,26 @@ const ViewPostPage = () => {
                         <div className="flex justify-between items-center mb-6">
                             <button
                                 onClick={() => router.back()}
-                                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+                                className="px-4 py-2 rounded-md transition-colors"
+                                style={{backgroundColor: '#FF9800', color: '#FFFFFF'}}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFB74D'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FF9800'}
                             >
                                 &larr; Back
                             </button>
                             <div className="flex items-center space-x-4">
-                                <Link href={`/admin/posts/edit/${post._id}`} className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition">
+                                <Link href={`/admin/posts/edit/${post._id}`} className="font-bold py-2 px-4 rounded-lg transition" style={{backgroundColor: '#FF9800', color: '#FFFFFF'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFB74D'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FF9800'}>
                                     Edit Post
                                 </Link>
-                                <button onClick={handleDelete} className="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition">
+                                <button onClick={handleDelete} className="font-bold py-2 px-4 rounded-lg transition" style={{backgroundColor: '#D32F2F', color: '#FFFFFF'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F44336'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#D32F2F'}>
                                     Delete Post
                                 </button>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div className="rounded-xl shadow-lg overflow-hidden" style={{backgroundColor: '#1E1E1E'}}>
                             {post.imageUrls && post.imageUrls.length > 0 && (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 p-6">
                                     {post.imageUrls.map((url, index) => (
                                         <img
                                             key={index}
@@ -111,21 +114,21 @@ const ViewPostPage = () => {
                                 </div>
                             )}
                             <div className="p-6 md:p-8">
-                                <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">{post.title}</h1>
-                                <div className="flex items-center text-gray-500 text-sm mb-6">
+                                <h1 className="text-3xl md:text-4xl font-extrabold mb-4 break-words" style={{color: '#FFFFFF'}}>{post.title}</h1>
+                                <div className="flex items-center text-sm mb-6" style={{color: '#B0B0B0'}}>
                                     <span>By {post.author?.username || 'Unknown Author'}</span>
                                     <span className="mx-2">&bull;</span>
                                     <span>{new Date(post.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                                 </div>
                                 {/* Yeh 'prose' class ab saari styling karegi */}
-                                <div className="prose lg:prose-xl max-w-full text-gray-800"
+                                <div className="prose lg:prose-xl max-w-full text-content break-words"
                                      dangerouslySetInnerHTML={{ __html: post.content }}
                                 />
                             </div>
                         </div>
                     </>
                 ) : (
-                    <div className="text-center py-10 text-gray-500">Post nahi mila.</div>
+                    <div className="text-center py-10" style={{color: '#B0B0B0'}}>Post nahi mila.</div>
                 )}
             </div>
         </RoleProtectedRoute>

@@ -85,29 +85,29 @@ const AdminDashboardPage = () => {
         <div className="p-4 md:p-8">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h1 className="text-3xl font-extrabold text-red-600">Admin Control Panel</h1>
-              <p className="text-lg text-gray-700">Welcome, {username || 'Master'}!</p>
+              <h1 className="text-3xl font-extrabold" style={{color: '#FF9800'}}>Admin Control Panel</h1>
+              <p className="text-lg" style={{color: '#B0B0B0'}}>Welcome, {username || 'Master'}!</p>
             </div>
             {/* "All Posts" button abhi bhi rahega, lekin iska page abhi simple hai */}
-            <Link href="/admin/posts" className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition">
+            <Link href="/admin/posts" className="font-bold py-2 px-4 rounded-lg transition" style={{backgroundColor: '#FF9800', color: '#FFFFFF'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFB74D'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FF9800'}>
                 All Posts
             </Link>
           </div>
           
-          <div className="mt-8 border rounded-lg p-4 bg-white shadow-md">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">User Management</h2>
-            {isLoading ? ( <p>Loading user list...</p> ) : 
+          <div className="mt-8 border rounded-lg p-4 shadow-md" style={{backgroundColor: '#1E1E1E', borderColor: '#FF9800'}}>
+            <h2 className="text-2xl font-bold mb-4" style={{color: '#FFFFFF'}}>User Management</h2>
+            {isLoading ? ( <p style={{color: '#FFFFFF'}}>Loading user list...</p> ) : 
              error ? ( <p className="text-red-500 text-center py-4">{error}</p> ) : 
             (
               <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border">
-                    <thead className="bg-gray-200"><tr><th className="py-2 px-4 border">Username</th><th className="py-2 px-4 border">Email</th><th className="py-2 px-4 border">Role</th><th className="py-2 px-4 border">Status</th><th className="py-2 px-4 border">Actions</th></tr></thead>
+                <table className="min-w-full border" style={{backgroundColor: '#2E2E2E'}}>
+                    <thead style={{backgroundColor: '#FF9800'}}><tr><th className="py-2 px-4 border" style={{color: '#FFFFFF'}}>Username</th><th className="py-2 px-4 border" style={{color: '#FFFFFF'}}>Email</th><th className="py-2 px-4 border" style={{color: '#FFFFFF'}}>Role</th><th className="py-2 px-4 border" style={{color: '#FFFFFF'}}>Status</th><th className="py-2 px-4 border" style={{color: '#FFFFFF'}}>Actions</th></tr></thead>
                     <tbody>
                         {users.map((user) => (
-                        <tr key={user._id} className="text-center hover:bg-gray-50">
-                            <td className="py-2 px-4 border">{user.username}</td><td className="py-2 px-4 border">{user.email}</td><td className="py-2 px-4 border">{user.role}</td>
-                            <td className="py-2 px-4 border"><span className={`px-2 py-1 rounded-full text-xs font-semibold ${user.status === 'active' ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'}`}>{user.status}</span></td>
-                            <td className="py-2 px-4 border"><select onChange={(e) => {handleAction(user._id, e.target.value); e.target.value = ""}} className="border rounded p-1"><option value="">Select Action</option><option value="delete">Delete</option></select></td>
+                        <tr key={user._id} className="text-center hover:opacity-80" style={{backgroundColor: '#2E2E2E'}}>
+                            <td className="py-2 px-4 border" style={{color: '#FFFFFF'}}>{user.username}</td><td className="py-2 px-4 border" style={{color: '#FFFFFF'}}>{user.email}</td><td className="py-2 px-4 border" style={{color: '#FFFFFF'}}>{user.role}</td>
+                            <td className="py-2 px-4 border"><span className={`px-2 py-1 rounded-full text-xs font-semibold ${user.status === 'active' ? 'bg-green-500' : 'bg-yellow-500'}`} style={{color: '#FFFFFF'}}>{user.status}</span></td>
+                            <td className="py-2 px-4 border"><select onChange={(e) => {handleAction(user._id, e.target.value); e.target.value = ""}} className="border rounded p-1" style={{backgroundColor: '#2E2E2E', color: '#FFFFFF', borderColor: '#FF9800'}}><option value="">Select Action</option><option value="delete">Delete</option></select></td>
                         </tr>
                         ))}
                     </tbody>
@@ -118,15 +118,15 @@ const AdminDashboardPage = () => {
 
           {/* Deleted Users Table */}
           {!isLoading && deletedUsers.length > 0 && (
-            <div className="mt-8 border rounded-lg p-4 bg-gray-50 shadow-md">
-              <h2 className="text-2xl font-bold text-gray-700 mb-4">Deleted Users</h2>
+            <div className="mt-8 border rounded-lg p-4 shadow-md" style={{backgroundColor: '#1E1E1E', borderColor: '#FF9800'}}>
+              <h2 className="text-2xl font-bold mb-4" style={{color: '#FFFFFF'}}>Deleted Users</h2>
               <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border">
-                    <thead className="bg-gray-100"><tr><th className="py-2 px-4 border">Username</th><th className="py-2 px-4 border">Email</th></tr></thead>
+                <table className="min-w-full border" style={{backgroundColor: '#2E2E2E'}}>
+                    <thead style={{backgroundColor: '#FF9800'}}><tr><th className="py-2 px-4 border" style={{color: '#FFFFFF'}}>Username</th><th className="py-2 px-4 border" style={{color: '#FFFFFF'}}>Email</th></tr></thead>
                     <tbody>
                         {deletedUsers.map((user) => (
-                        <tr key={user._id} className="text-center">
-                            <td className="py-2 px-4 border">{user.username}</td><td className="py-2 px-4 border">{user.email}</td>
+                        <tr key={user._id} className="text-center" style={{backgroundColor: '#2E2E2E'}}>
+                            <td className="py-2 px-4 border" style={{color: '#FFFFFF'}}>{user.username}</td><td className="py-2 px-4 border" style={{color: '#FFFFFF'}}>{user.email}</td>
                         </tr>
                         ))}
                     </tbody>

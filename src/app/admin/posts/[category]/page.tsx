@@ -106,14 +106,15 @@ const CategorySubcategoriesPage = () => {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
+                <div className="rounded-lg shadow-md p-4 md:p-6" style={{backgroundColor: '#1E1E1E'}}>
                     <div className="flex flex-col md:flex-row md:items-center md:space-x-3 space-y-3 md:space-y-0">
                         <input
                             type="text"
                             value={newSubcatName}
                             onChange={(e) => setNewSubcatName(e.target.value)}
                             placeholder="New subcategory name"
-                            className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                                        className="flex-1 px-4 py-2 border rounded-md"
+                            style={{backgroundColor: '#2E2E2E', borderColor: '#FF9800', color: '#FFFFFF'}}
                         />
                         <button
                             onClick={createSubcategory}

@@ -9,7 +9,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen bg-gray-50">
+      <body className="flex flex-col min-h-screen" style={{backgroundColor: '#121212', color: '#FFFFFF'}}>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Header />
         <main className="flex-grow container mx-auto px-6 py-8">

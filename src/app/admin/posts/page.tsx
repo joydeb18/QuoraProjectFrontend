@@ -91,58 +91,60 @@ const CategoriesPage = () => {
         <RoleProtectedRoute requiredRole="admin">
             <div className="p-4 md:p-8">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-extrabold text-gray-800">Categories</h1>
+                    <h1 className="text-3xl font-extrabold" style={{color: '#FFFFFF'}}>Categories</h1>
                     <div className="flex items-center space-x-4">
-                        <Link href="/admin/dashboard" className="text-indigo-600 hover:underline">
+                        <Link href="/admin/dashboard" className="hover:opacity-80" style={{color: '#FF9800'}}>
                             &larr; Back to Dashboard
                         </Link>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
+                <div className="rounded-lg shadow-md p-4 md:p-6" style={{backgroundColor: '#1E1E1E'}}>
                     <div className="flex flex-col md:flex-row md:items-center md:space-x-3 space-y-3 md:space-y-0">
                         <input
                             type="text"
                             value={newCategoryName}
                             onChange={(e) => setNewCategoryName(e.target.value)}
                             placeholder="New category name"
-                            className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                            className="flex-1 px-4 py-2 border rounded-md"
+                            style={{backgroundColor: '#2E2E2E', borderColor: '#FF9800', color: '#FFFFFF'}}
                         />
                         <button
                             onClick={createCategory}
                             disabled={creating || !newCategoryName.trim()}
-                            className="bg-green-600 text-white font-semibold px-4 py-2 rounded-md disabled:opacity-60"
+                            className="font-semibold px-4 py-2 rounded-md disabled:opacity-60"
+                            style={{backgroundColor: '#4CAF50', color: '#FFFFFF'}}
                         >
                             {creating ? 'Creating...' : '+ Create Category'}
                         </button>
-                        <Link href="/admin/posts/new" className="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-md">
+                        <Link href="/admin/posts/new" className="font-semibold px-4 py-2 rounded-md" style={{backgroundColor: '#FF9800', color: '#FFFFFF'}}>
                             + Create Post
                         </Link>
                     </div>
-                    {error && <p className="text-red-600 mt-3">{error}</p>}
-                    {success && <p className="text-green-600 mt-3">{success}</p>}
+                    {error && <p className="text-red-500 mt-3">{error}</p>}
+                    {success && <p className="text-green-500 mt-3">{success}</p>}
                 </div>
 
                 <div className="mt-8">
                     {isLoading ? (
-                        <p className="text-center py-10">Categories load ho rahi hain...</p>
+                        <p className="text-center py-10" style={{color: '#FFFFFF'}}>Categories load ho rahi hain...</p>
                     ) : categories.length === 0 ? (
-                        <p className="text-center py-10 text-gray-600">Abhi koi category nahi bani.</p>
+                        <p className="text-center py-10" style={{color: '#B0B0B0'}}>Abhi koi category nahi bani.</p>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {categories.map((cat) => {
                                 const catSlug = cat.slug ?? cat._id;
                                 return (
-                                    <div key={cat._id} className="block border rounded-lg p-4 hover:shadow-md transition bg-white">
+                                    <div key={cat._id} className="block border rounded-lg p-4 hover:shadow-md transition" style={{backgroundColor: '#1E1E1E', borderColor: '#FF9800'}}>
                                         <div className="flex items-center justify-between">
-                                            <Link href={`/admin/posts/${encodeURIComponent(catSlug)}`} className="text-xl font-semibold text-gray-800 hover:underline">
+                                            <Link href={`/admin/posts/${encodeURIComponent(catSlug)}`} className="text-xl font-semibold hover:opacity-80" style={{color: '#FFFFFF'}}>
                                                 {cat.name}
                                             </Link>
-                                            <button onClick={() => renameCategory(cat)} className="px-3 py-1 text-sm font-medium rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50">
+                                            <button onClick={() => renameCategory(cat)} className="px-3 py-1 text-sm font-medium rounded-md border hover:opacity-80" style={{borderColor: '#FF9800', color: '#FF9800'}}>
                                                 Rename
                                             </button>
                                         </div>
-                                        <p className="text-sm text-gray-500 mt-1">Subcategories dekhein & manage karein</p>
+                                        <p className="text-sm mt-1" style={{color: '#B0B0B0'}}>Subcategories dekhein & manage karein</p>
                                     </div>
                                 );
                             })}

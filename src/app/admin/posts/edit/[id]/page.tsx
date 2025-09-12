@@ -98,31 +98,31 @@ const EditPostPage = () => {
       <RoleProtectedRoute requiredRole="admin">
         <div className="p-4 md:p-8">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-extrabold text-gray-800">Edit Post</h1>
-            <Link href={`/admin/posts/view/${postId}`} className="text-indigo-600 hover:underline">&larr; Back to View Post</Link>
+            <h1 className="text-3xl font-extrabold" style={{color: '#FFFFFF'}}>Edit Post</h1>
+            <Link href={`/admin/posts/view/${postId}`} className="hover:opacity-80" style={{color: '#FF9800'}}>&larr; Back to View Post</Link>
           </div>
           
-          <form onSubmit={handleSubmit} className="mt-8 p-6 bg-white rounded-lg shadow-md space-y-6">
+          <form onSubmit={handleSubmit} className="mt-8 p-6 rounded-lg shadow-md space-y-6" style={{backgroundColor: '#1E1E1E'}}>
             <div>
-              <label htmlFor="title" className="block text-lg font-medium text-gray-700">Post Title <span className="text-red-500">*</span></label>
-              <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm" required />
+              <label htmlFor="title" className="block text-lg font-medium" style={{color: '#B0B0B0'}}>Post Title <span className="text-red-500">*</span></label>
+              <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm" style={{backgroundColor: '#2E2E2E', borderColor: '#FF9800', color: '#FFFFFF'}} required />
             </div>
             <div>
-              <label htmlFor="content" className="block text-lg font-medium text-gray-700 mb-2">Post Description <span className="text-red-500">*</span></label>
+              <label htmlFor="content" className="block text-lg font-medium mb-2" style={{color: '#B0B0B0'}}>Post Description <span className="text-red-500">*</span></label>
               {content && <TiptapEditor content={content} onChange={(newContent) => setContent(newContent)} />}
             </div>
             <div>
-              <label htmlFor="newImages" className="block text-lg font-medium text-gray-700">Add New Images (Optional)</label>
-              <input type="file" id="newImages" onChange={handleImageChange} accept="image/*" multiple className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100"/>
+              <label htmlFor="newImages" className="block text-lg font-medium" style={{color: '#B0B0B0'}}>Add New Images (Optional)</label>
+              <input type="file" id="newImages" onChange={handleImageChange} accept="image/*" multiple className="mt-1 block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold" style={{color: '#FFFFFF'}}/>
             </div>
             {existingImageUrls.length > 0 && (
                 <div>
-                    <h3 className="text-lg font-medium text-gray-700">Existing Images:</h3>
+                    <h3 className="text-lg font-medium" style={{color: '#B0B0B0'}}>Existing Images:</h3>
                     <div className="mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {existingImageUrls.map((url, index) => {
                             
                             return (
-                                <div key={index} className="border rounded-md p-2">
+                                <div key={index} className="border rounded-md p-2" style={{borderColor: '#FF9800'}}>
                                     <img src={`${backendUrl}/${url}`} alt={`Existing image ${index + 1}`} className="max-h-40 w-full object-contain rounded-md"/>
                                 </div>
                             );
@@ -133,20 +133,20 @@ const EditPostPage = () => {
 
             {newImagePreviews.length > 0 && (
                 <div>
-                    <h3 className="text-lg font-medium text-gray-700">New Image Previews:</h3>
+                    <h3 className="text-lg font-medium" style={{color: '#B0B0B0'}}>New Image Previews:</h3>
                     <div className="mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {newImagePreviews.map((preview, index) => (
-                            <div key={index} className="border rounded-md p-2">
+                            <div key={index} className="border rounded-md p-2" style={{borderColor: '#FF9800'}}>
                                 <img src={preview} alt={`New preview ${index + 1}`} className="max-h-40 w-full object-contain rounded-md"/>
                             </div>
                         ))}
                     </div>
                 </div>
             )}
-            {message && <p className="text-center text-green-600">{message}</p>}
-            {error && <p className="text-center text-red-600">{error}</p>}
+            {message && <p className="text-center text-green-500">{message}</p>}
+            {error && <p className="text-center text-red-500">{error}</p>}
             <div className="text-right">
-              <button type="submit" className="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-lg font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400" disabled={isLoading}>{isLoading ? 'Updating...' : 'Update Post'}</button>
+              <button type="submit" className="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-lg font-medium rounded-md disabled:opacity-50" style={{backgroundColor: '#FF9800', color: '#FFFFFF'}} disabled={isLoading} onMouseEnter={(e) => !isLoading && (e.currentTarget.style.backgroundColor = '#FFB74D')} onMouseLeave={(e) => !isLoading && (e.currentTarget.style.backgroundColor = '#FF9800')}>{isLoading ? 'Updating...' : 'Update Post'}</button>
             </div>
           </form>
         </div>

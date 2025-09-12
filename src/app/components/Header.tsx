@@ -24,21 +24,21 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50">
+    <header className="shadow-md sticky top-0 z-50" style={{backgroundColor: '#1E1E1E'}}>
       <div className="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-gray-800 hover:text-indigo-600">
+        <Link href="/" className="text-2xl font-bold hover:opacity-80 transition" style={{color: '#FFFFFF'}}>
           JoyBlog
         </Link>
         <nav className="flex items-center space-x-2 md:space-x-4">
-          <Link href="/" className="text-gray-600 hover:text-indigo-600">Home</Link>
-          <Link href="/about" className="text-gray-600 hover:text-indigo-600">About</Link>
-          <Link href="/contact" className="text-gray-600 hover:text-indigo-600">Contact</Link>
+          <Link href="/" className="hover:opacity-80 transition" style={{color: '#B0B0B0'}}>Home</Link>
+          <Link href="/about" className="hover:opacity-80 transition" style={{color: '#B0B0B0'}}>About</Link>
+          <Link href="/contact" className="hover:opacity-80 transition" style={{color: '#B0B0B0'}}>Contact</Link>
           {isLoggedIn ? (
-            <button onClick={handleLogout} className="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition">
+            <button onClick={handleLogout} className="font-bold py-2 px-4 rounded-lg transition" style={{backgroundColor: '#FF9800', color: '#FFFFFF'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFB74D'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FF9800'}>
               Logout
             </button>
           ) : (
-            <Link href="/login" className="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition">
+            <Link href="/login" className="font-bold py-2 px-4 rounded-lg transition" style={{backgroundColor: '#FF9800', color: '#FFFFFF'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFB74D'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FF9800'}>
               Signup/Login
             </Link>
           )}

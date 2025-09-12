@@ -13,6 +13,7 @@ interface Post {
     username: string;
   };
   imageUrl?: string;
+  imageUrls?: string[];
 }
 
 const ViewPostPage = () => {
@@ -54,23 +55,40 @@ const ViewPostPage = () => {
       <div className="p-4 md:p-8">
         <button
           onClick={() => router.back()}
-          className="mb-4 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+          className="mb-4 px-4 py-2 rounded-md transition-colors"
+          style={{backgroundColor: '#FF9800', color: '#FFFFFF'}}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFB74D'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FF9800'}
         >
           &larr; Back
         </button>
         {isLoading ? (
-          <p className="text-center">Loading post...</p>
+          <p className="text-center" style={{color: '#FFFFFF'}}>Loading post...</p>
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : post ? (
-          <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
-            {post.imageUrl && <img src={`${backendUrl}/${post.imageUrl}`} alt={post.title} className="w-full h-96 object-contain mb-6 rounded"/>}
-            <h1 className="text-4xl font-extrabold text-gray-800 mb-4">{post.title}</h1>
-            <p className="text-lg text-gray-600 mb-4">By {post.author.username}</p>
-            <div className="prose lg:prose-xl max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />
+          <div className="max-w-4xl mx-auto rounded-lg shadow-md p-6" style={{backgroundColor: '#1E1E1E'}}>
+            {/* Handle both single image and multiple images */}
+            {post.imageUrls && post.imageUrls.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                {post.imageUrls.map((url, index) => (
+                  <img
+                    key={index}
+                    src={`${backendUrl}/${url}`}
+                    alt={`Post image ${index + 1}`}
+                    className="w-full h-auto max-h-[300px] object-contain rounded-lg shadow-md"
+                  />
+                ))}
+              </div>
+            ) : post.imageUrl ? (
+              <img src={`${backendUrl}/${post.imageUrl}`} alt={post.title} className="w-full h-96 object-contain mb-6 rounded"/>
+            ) : null}
+            <h1 className="text-4xl font-extrabold mb-4 break-words" style={{color: '#FFFFFF'}}>{post.title}</h1>
+            <p className="text-lg mb-4" style={{color: '#B0B0B0'}}>By {post.author.username}</p>
+            <div className="prose lg:prose-xl max-w-none text-content break-words" dangerouslySetInnerHTML={{ __html: post.content }} />
           </div>
         ) : (
-          <p className="text-center text-gray-600">Post not found.</p>
+          <p className="text-center" style={{color: '#B0B0B0'}}>Post not found.</p>
         )}
       </div>
     </RoleProtectedRoute>

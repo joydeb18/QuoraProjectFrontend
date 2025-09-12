@@ -134,19 +134,20 @@ const PostForm = () => {
     return (
         <div className="p-4 md:p-8 max-w-3xl mx-auto">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-extrabold text-gray-800">Create a New Post</h1>
-                <Link href="/admin/posts" className="text-indigo-600 hover:underline">&larr; Back to All Posts</Link>
+                <h1 className="text-3xl font-extrabold" style={{color: '#FFFFFF'}}>Create a New Post</h1>
+                <Link href="/admin/posts" className="hover:opacity-80" style={{color: '#FF9800'}}>&larr; Back to All Posts</Link>
             </div>
             
-            <form onSubmit={handleSubmit} className="mt-8 p-6 bg-white rounded-lg shadow-md space-y-6">
+            <form onSubmit={handleSubmit} className="mt-8 p-6 rounded-lg shadow-md space-y-6" style={{backgroundColor: '#1E1E1E'}}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label htmlFor="category" className="block text-lg font-medium text-gray-700">Category</label>
+                        <label htmlFor="category" className="block text-lg font-medium" style={{color: '#B0B0B0'}}>Category</label>
                         <select
                             id="category"
                             value={selectedCategory}
                             onChange={(e) => { setSelectedCategory(e.target.value); setSelectedSubcategory(''); }}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                            className="mt-1 block w-full px-4 py-2 border rounded-md"
+                            style={{backgroundColor: '#2E2E2E', borderColor: '#FF9800', color: '#FFFFFF'}}
                         >
                             <option value="">Select category</option>
                             {categories.map((c) => (
@@ -155,13 +156,14 @@ const PostForm = () => {
                         </select>
                     </div>
                     <div>
-                        <label htmlFor="subcategory" className="block text-lg font-medium text-gray-700">Subcategory</label>
+                        <label htmlFor="subcategory" className="block text-lg font-medium" style={{color: '#B0B0B0'}}>Subcategory</label>
                         <select
                             id="subcategory"
                             value={selectedSubcategory}
                             onChange={(e) => setSelectedSubcategory(e.target.value)}
                             disabled={!selectedCategory}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
+                            className="mt-1 block w-full px-4 py-2 border rounded-md"
+                            style={{backgroundColor: '#2E2E2E', borderColor: '#FF9800', color: '#FFFFFF', opacity: !selectedCategory ? 0.5 : 1}}
                         >
                             <option value="">Select subcategory</option>
                             {subcategories.map((s) => (
@@ -171,39 +173,42 @@ const PostForm = () => {
                     </div>
                 </div>
                 <div>
-                    <label htmlFor="title" className="block text-lg font-medium text-gray-700">Post Title <span className="text-red-500">*</span></label>
-                    <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required />
+                    <label htmlFor="title" className="block text-lg font-medium" style={{color: '#B0B0B0'}}>Post Title <span className="text-red-500">*</span></label>
+                    <input 
+                        type="text" 
+                        id="title" 
+                        value={title} 
+                        onChange={(e) => setTitle(e.target.value)} 
+                        className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm" 
+                        style={{backgroundColor: '#2E2E2E', borderColor: '#FF9800', color: '#FFFFFF'}}
+                        required 
+                    />
                 </div>
 
                 <div>
-                    <label htmlFor="content" className="block text-lg font-medium text-gray-700">Post Content <span className="text-red-500">*</span></label>
+                    <label htmlFor="content" className="block text-lg font-medium" style={{color: '#B0B0B0'}}>Post Content <span className="text-red-500">*</span></label>
                     <TiptapEditor content={content} onChange={(newContent) => setContent(newContent)} />
                 </div>
 
-                {/* === 2. IMAGE UPLOAD BUTTON THEEK KAR DIYA GAYA HAI === */}
                 <div>
-                    <label htmlFor="images" className="block text-lg font-medium text-gray-700">Featured Images (Optional)</label>
+                    <label htmlFor="images" className="block text-lg font-medium" style={{color: '#B0B0B0'}}>Featured Images (Optional)</label>
                     <input 
                         type="file" 
                         id="images" 
                         onChange={handleImageChange} 
                         accept="image/png, image/jpeg, image/gif" 
                         multiple
-                        className="mt-2 block w-full text-sm text-slate-500
-                            file:mr-4 file:py-2 file:px-4
-                            file:rounded-full file:border-0
-                            file:text-sm file:font-semibold
-                            file:bg-violet-50 file:text-violet-700
-                            hover:file:bg-violet-100"
+                        className="mt-2 block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold"
+                        style={{color: '#FFFFFF'}}
                     />
                 </div>
 
                 {imagePreviews.length > 0 && (
                     <div>
-                        <h3 className="text-lg font-medium text-gray-700">Image Previews:</h3>
+                        <h3 className="text-lg font-medium" style={{color: '#B0B0B0'}}>Image Previews:</h3>
                         <div className="mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             {imagePreviews.map((preview, index) => (
-                                <div key={index} className="border rounded-md p-2">
+                                <div key={index} className="border rounded-md p-2" style={{borderColor: '#FF9800'}}>
                                     <img src={preview} alt={`Selected preview ${index + 1}`} className="max-h-40 w-full object-contain rounded-md"/>
                                 </div>
                             ))}
@@ -211,11 +216,18 @@ const PostForm = () => {
                     </div>
                 )}
 
-                {message && <p className="text-center text-green-600 font-semibold">{message}</p>}
-                {error && <p className="text-center text-red-600 font-semibold">{error}</p>}
+                {message && <p className="text-center text-green-500 font-semibold">{message}</p>}
+                {error && <p className="text-center text-red-500 font-semibold">{error}</p>}
 
                 <div className="text-right">
-                    <button type="submit" className="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-lg font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400" disabled={isLoading}>
+                    <button 
+                        type="submit" 
+                        className="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-lg font-medium rounded-md disabled:opacity-50" 
+                        style={{backgroundColor: '#FF9800', color: '#FFFFFF'}}
+                        disabled={isLoading}
+                        onMouseEnter={(e) => !isLoading && (e.currentTarget.style.backgroundColor = '#FFB74D')}
+                        onMouseLeave={(e) => !isLoading && (e.currentTarget.style.backgroundColor = '#FF9800')}
+                    >
                         {isLoading ? 'Publishing...' : 'Publish Post'}
                     </button>
                 </div>

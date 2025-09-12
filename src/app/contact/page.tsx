@@ -1,11 +1,11 @@
 const ContactPage = () => {
   return (
-    <div className="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto">
-      <h1 className="text-4xl font-extrabold text-center text-gray-800 mb-6">
+    <div className="p-8 rounded-lg shadow-md max-w-2xl mx-auto" style={{backgroundColor: '#1E1E1E'}}>
+      <h1 className="text-4xl font-extrabold text-center mb-6" style={{color: '#FFFFFF'}}>
         Humse Sampark Karein (Contact Us)
       </h1>
       
-      <p className="text-center text-lg text-gray-600 mb-8">
+      <p className="text-center text-lg mb-8" style={{color: '#B0B0B0'}}>
         Aapke paas koi sawaal hai ya aap humse baat karna chahte hain? Neeche diye gaye form ko bharein.
       </p>
 
@@ -13,7 +13,7 @@ const ContactPage = () => {
       <form>
         {/* Name Input Field */}
         <div className="mb-4">
-          <label htmlFor="name" className="block text-gray-700 font-bold mb-2">
+          <label htmlFor="name" className="block font-bold mb-2" style={{color: '#B0B0B0'}}>
             Aapka Naam
           </label>
           <input 
@@ -21,14 +21,15 @@ const ContactPage = () => {
             id="name" 
             name="name"
             placeholder="Yahan apna poora naam likhein"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 border rounded-lg focus:outline-none"
+            style={{backgroundColor: '#2E2E2E', borderColor: '#FF9800', color: '#FFFFFF'}}
             required
           />
         </div>
 
         {/* Email Input Field */}
         <div className="mb-4">
-          <label htmlFor="email" className="block text-gray-700 font-bold mb-2">
+          <label htmlFor="email" className="block font-bold mb-2" style={{color: '#B0B0B0'}}>
             Aapka Email
           </label>
           <input 
@@ -36,14 +37,15 @@ const ContactPage = () => {
             id="email" 
             name="email"
             placeholder="Yahan apna email address likhein"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 border rounded-lg focus:outline-none"
+            style={{backgroundColor: '#2E2E2E', borderColor: '#FF9800', color: '#FFFFFF'}}
             required
           />
         </div>
 
         {/* Message Text Area */}
         <div className="mb-6">
-          <label htmlFor="message" className="block text-gray-700 font-bold mb-2">
+          <label htmlFor="message" className="block font-bold mb-2" style={{color: '#B0B0B0'}}>
             Aapka Sandesh (Message)
           </label>
           <textarea 
@@ -51,7 +53,8 @@ const ContactPage = () => {
             name="message"
             rows={5}
             placeholder="Aap humse kya kehna chahte hain..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 border rounded-lg focus:outline-none"
+            style={{backgroundColor: '#2E2E2E', borderColor: '#FF9800', color: '#FFFFFF'}}
             required
           >
           </textarea>
@@ -61,7 +64,10 @@ const ContactPage = () => {
         <div className="text-center">
           <button 
             type="submit"
-            className="bg-blue-500 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-600 transition duration-300"
+            className="font-bold py-3 px-8 rounded-full transition duration-300"
+            style={{backgroundColor: '#FF9800', color: '#FFFFFF'}}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFB74D'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FF9800'}
           >
             Form Bhejein (Submit)
           </button>
