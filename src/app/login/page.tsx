@@ -106,7 +106,7 @@ const LoginPage = () => {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center">
                         <input type="checkbox" id="admin-login" checked={isAdminLogin} onChange={(e) => setIsAdminLogin(e.target.checked)} className="h-4 w-4 text-indigo-600 border-gray-300 rounded" />
-                        <label htmlFor="admin-login" className="ml-2 block text-sm text-gray-900">Login as Admin</label>
+                        <label htmlFor="admin-login" className="ml-2 block text-base text-gray-900">Login as Admin</label>
                     </div>
                     <div className="text-sm">
                         <Link href="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">Forgot password?</Link>
@@ -116,7 +116,7 @@ const LoginPage = () => {
                 <button type="submit" className="w-full py-2 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:bg-indigo-400" disabled={isLoading}>{isLoading ? 'Logging in...' : 'Login'}</button>
             </form>
             {error && <p className="mt-4 text-center text-red-600">{error}</p>}
-            <p className="text-center text-sm text-gray-600">Don't have an account?{' '} <Link href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">Sign up here</Link></p>
+            <p className="text-center text-base text-gray-800">Don't have an account?{' '} <Link href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">Sign up here</Link></p>
         </div>
     </main>
   );

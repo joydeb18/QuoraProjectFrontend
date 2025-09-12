@@ -80,15 +80,24 @@ const SubcategoryPostsPage = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {posts.map((post) => (
-              <div key={post._id} className="border rounded-lg p-4 bg-white hover:shadow-md transition">
+
+              <Link
+                key={post._id}
+                href={`/posts/view/${post._id}`}
+                className="block relative overflow-hidden rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 ease-in-out
+                           bg-gradient-to-br from-white to-gray-50 border border-gray-200 hover:border-blue-400 group"
+              >
+                {/* All content of the card goes inside the Link */}
                 {post.imageUrl && <img src={`${backendUrl}/${post.imageUrl}`} alt={post.title} className="w-full h-48 object-cover mb-4 rounded"/>}
-                <h3 className="text-lg font-semibold text-gray-800">{post.title}</h3>
-                <p className="text-sm text-gray-500 mt-1">By {post.author.username}</p>
-                <div className="mt-2" dangerouslySetInnerHTML={{ __html: post.content.substring(0, 100) + '...' }} />
-                <Link href={`/posts/view/${post._id}`} legacyBehavior>
-                  <a className="text-blue-500 hover:underline mt-2 inline-block">View Post</a>
-                </Link>
-              </div>
+                <div className="p-4">
+                  <h3 className="text-2xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors duration-300">{post.title}</h3>
+                  <p className="text-sm text-gray-600 mt-1">By {post.author.username}</p>
+                  <div className="mt-2 text-gray-700" dangerouslySetInnerHTML={{ __html: post.content.substring(0, 100) + '...' }} />
+                  {/* The "Read More" link is no longer a separate Link, but part of the clickable card */}
+                  <span className="text-blue-500 hover:underline mt-4 inline-block font-semibold">Read More &rarr;</span>
+                </div>
+                <div className="absolute inset-0 bg-blue-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+              </Link>
             ))}
           </div>
         )}
