@@ -26,27 +26,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Text overflow fixes */
-.prose {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-}
 
-.prose p {
-  color: var(--foreground);
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-
-.prose a {
-  color: var(--accent);
-  text-decoration: underline;
-}
-
-.prose a:hover {
-  color: #FFB74D;
-}
 
 /* Container responsive fixes */
 .container {
@@ -54,13 +34,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Text content wrapper */
-.text-content {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-  max-width: 100%;
-}
+
 
 /* Tiptap Editor Dark Theme */
 .ProseMirror {

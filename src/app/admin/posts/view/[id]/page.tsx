@@ -121,7 +121,7 @@ const ViewPostPage = () => {
                                     <span>{new Date(post.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                                 </div>
                                 {/* Yeh 'prose' class ab saari styling karegi */}
-                                <div className="prose lg:prose-xl max-w-full text-content break-words"
+                                <div className="prose lg:prose-xl max-w-full text-content break-words ProseMirror"
                                      dangerouslySetInnerHTML={{ __html: post.content }}
                                 />
                             </div>
