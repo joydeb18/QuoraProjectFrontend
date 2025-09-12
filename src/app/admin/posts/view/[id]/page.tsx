@@ -81,7 +81,12 @@ const ViewPostPage = () => {
                 {post ? (
                     <>
                         <div className="flex justify-between items-center mb-6">
-                            <Link href="/admin/posts" className="text-indigo-600 hover:underline">&larr; Back to All Posts</Link>
+                            <button
+                                onClick={() => router.back()}
+                                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+                            >
+                                &larr; Back
+                            </button>
                             <div className="flex items-center space-x-4">
                                 <Link href={`/admin/posts/edit/${post._id}`} className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition">
                                     Edit Post

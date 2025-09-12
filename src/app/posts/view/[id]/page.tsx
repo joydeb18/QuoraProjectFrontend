@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation'; // Import useRouter
 import RoleProtectedRoute from '@/app/components/RoleProtectedRoute';
 
 interface Post {
@@ -18,6 +18,7 @@ interface Post {
 const ViewPostPage = () => {
   const params = useParams();
   const postId = params?.id as string;
+  const router = useRouter(); // Initialize router
 
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -51,6 +52,12 @@ const ViewPostPage = () => {
   return (
     <RoleProtectedRoute requiredRole="user">
       <div className="p-4 md:p-8">
+        <button
+          onClick={() => router.back()}
+          className="mb-4 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+        >
+          &larr; Back
+        </button>
         {isLoading ? (
           <p className="text-center">Loading post...</p>
         ) : error ? (

@@ -28,3 +28,7 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.prose p {
+  color: #FF8000; /* Orange color for description text */
+}
