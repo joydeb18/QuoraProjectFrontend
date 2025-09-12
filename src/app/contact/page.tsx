@@ -1,3 +1,4 @@
+"use client"
 const ContactPage = () => {
   return (
     <div className="p-8 rounded-lg shadow-md max-w-2xl mx-auto" style={{backgroundColor: '#1E1E1E'}}>
