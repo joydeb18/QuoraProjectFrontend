@@ -85,7 +85,7 @@ const ViewPostPage = () => {
             ) : null}
             <h1 className="text-4xl font-extrabold mb-4 break-words" style={{color: '#FFFFFF'}}>{post.title}</h1>
             <p className="text-lg mb-4" style={{color: '#B0B0B0'}}>By {post.author.username}</p>
-            <div className="prose lg:prose-xl max-w-none text-content break-words" dangerouslySetInnerHTML={{ __html: post.content }} />
+            <div className="prose lg:prose-xl max-w-none text-content break-words ProseMirror" dangerouslySetInnerHTML={{ __html: post.content }} />
           </div>
         ) : (
           <p className="text-center" style={{color: '#B0B0B0'}}>Post not found.</p>
